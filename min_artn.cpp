@@ -482,7 +482,8 @@ void MinARTn::metropolis()
     ddum = drall;
     print_info(60);
 
-    if (temperature > 0. && (ecurrent < eref || random->uniform() < exp((eref - ecurrent)/temperature))) acc = 1;
+    // temporary modification
+    if (temperature > 0. && (ecurrent < eref || random->uniform() < exp((eref - ecurrent)/temperature)) && ecurrent - eref > -5) acc = 1;
   }
   MPI_Bcast(&acc, 1, MPI_INT, 0, world);
 
@@ -2970,10 +2971,12 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
   FILE * fp;
   char str[MAXLINE], oneline[MAXLINE], *token;
   int flag_scale = 0;
+  int flag_tilt = 0;
   int id,type,ilocal;
   bigint natoms; 
   double * dumppos;
   double lox,hix,loy,hiy,loz,hiz,lx,ly,lz;
+  double xy,xz,yz; 
   lox = hix = loy = hiy = loz = lx = ly = lz = 0.0;
   if (file == NULL){
     error->one(FLERR,"Dump direction file not set.");
@@ -2993,15 +2996,28 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
   dumppos = new double [3*natoms+3];
   if (me == 0){
     fgets(oneline,MAXLINE,fp);
-    fgets(oneline,MAXLINE,fp);
-    sscanf(oneline,"%lg %lg",&lox,&hix);
-    lx = hix - lox;
-    fgets(oneline,MAXLINE,fp);
-    sscanf(oneline,"%lg %lg",&loy,&hiy);
-    ly = hiy - loy;
-    fgets(oneline,MAXLINE,fp);
-    sscanf(oneline,"%lg %lg",&loz,&hiz);
-    lz = hiz - loz;
+    if(oneline[strlen("ITEM: BOX BOUNDS p")] == 'p'){
+      fgets(oneline,MAXLINE,fp);
+      sscanf(oneline,"%lg %lg",&lox,&hix);
+      lx = hix - lox;
+      fgets(oneline,MAXLINE,fp);
+      sscanf(oneline,"%lg %lg",&loy,&hiy);
+      ly = hiy - loy;
+      fgets(oneline,MAXLINE,fp);
+      sscanf(oneline,"%lg %lg",&loz,&hiz);
+      lz = hiz - loz;
+    }else{
+      flag_tilt = 1;
+      fgets(oneline,MAXLINE,fp);
+      sscanf(oneline,"%lg %lg %lg",&lox,&hix,&xy);
+      lx = hix - lox;
+      fgets(oneline,MAXLINE,fp);
+      sscanf(oneline,"%lg %lg %lg",&loy,&hiy,&xz);
+      ly = hiy - loy;
+      fgets(oneline,MAXLINE,fp);
+      sscanf(oneline,"%lg %lg %lg",&loz,&hiz,&yz);
+      lz = hiz - loz;
+    }
     fgets(oneline,MAXLINE,fp);
     if (oneline[strlen("ITEM: ATOMS id type x")] == 's') flag_scale = 1;
     for (bigint i = 0; i < natoms; ++i){
@@ -3009,9 +3025,15 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
       sscanf(oneline,"%i %i", &id, &type);
       sscanf(oneline,"%i %i %lg %lg %lg", &id, &type, dumppos+(3*id), dumppos+(3*id)+1,dumppos+(3*id)+2);
       if (flag_scale){
-	dumppos[3*id]   = dumppos[3*id] * lx + lox;
-	dumppos[3*id+1] = dumppos[3*id+1] * ly + loy;
-	dumppos[3*id+2] = dumppos[3*id+2] * lz + loz;
+	if(!flag_tilt){
+	  dumppos[3*id]   = dumppos[3*id] * lx + lox;
+	  dumppos[3*id+1] = dumppos[3*id+1] * ly + loy;
+	  dumppos[3*id+2] = dumppos[3*id+2] * lz + loz;
+	}else{
+	  dumppos[3*id]   = dumppos[3*id] * lx + lox + xy * dumppos[3*id+1] + xz * dumppos[3*id+2];
+	  dumppos[3*id+1] = dumppos[3*id+1] * ly + loy + yz * dumppos[3*id+2];
+	  dumppos[3*id+2] = dumppos[3*id+2] * lz + loz;
+	}
       }
     }
   }
