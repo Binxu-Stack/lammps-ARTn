@@ -871,7 +871,7 @@ void MinARTn::read_control()
   min_id = ref_0 = ref_id;
 
   // if disp_sad2min_thr not set, set as twice init_step_size
-  if (disp_sad2min_thr <= 0.) disp_sad2min_thr = init_step_size + init_step_size;
+  //if (disp_sad2min_thr <= 0.) disp_sad2min_thr = init_step_size + init_step_size;
 
   // default group name is all
   if (groupname == NULL) {groupname = new char [4]; strcpy(groupname, "all");}
