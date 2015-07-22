@@ -2978,6 +2978,8 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
   double lox,hix,loy,hiy,loz,hiz,lx,ly,lz;
   double xy,xz,yz; 
   lox = hix = loy = hiy = loz = lx = ly = lz = 0.0;
+  double loxb,hixb,loyb,hiyb,lozb,hizb;
+  loxb = hixb = loyb = hiyb = lozb = hizb = 0.0;
   if (file == NULL){
     error->one(FLERR,"Dump direction file not set.");
     return;
@@ -3009,14 +3011,17 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
     }else{
       flag_tilt = 1;
       fgets(oneline,MAXLINE,fp);
-      sscanf(oneline,"%lg %lg %lg",&lox,&hix,&xy);
-      lx = hix - lox;
+      sscanf(oneline,"%lg %lg %lg",&loxb,&hixb,&xy);
       fgets(oneline,MAXLINE,fp);
-      sscanf(oneline,"%lg %lg %lg",&loy,&hiy,&xz);
-      ly = hiy - loy;
+      sscanf(oneline,"%lg %lg %lg",&loyb,&hiyb,&xz);
       fgets(oneline,MAXLINE,fp);
-      sscanf(oneline,"%lg %lg %lg",&loz,&hiz,&yz);
-      lz = hiz - loz;
+      sscanf(oneline,"%lg %lg %lg",&lozb,&hizb,&yz);
+      lox = loxb - MIN(0.0, xy, xz, xy + xz); 
+      hix = hixb - MAX(0.0, xy, xz, xy + xz);
+      loy = loyb - MIN(0.0, yz);
+      hiy = hiyb - MAX(0.0, yz);
+      loz = lozb;
+      hiz = hizb;
     }
     fgets(oneline,MAXLINE,fp);
     if (oneline[strlen("ITEM: ATOMS id type x")] == 's') flag_scale = 1;
