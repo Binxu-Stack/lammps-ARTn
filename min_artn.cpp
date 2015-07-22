@@ -3017,7 +3017,7 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
       fgets(oneline,MAXLINE,fp);
       sscanf(oneline,"%lg %lg %lg",&lozb,&hizb,&yz);
       lox = loxb - MIN(0.0, MIN(xy, MIN(xz, xy + xz))); 
-      hix = hixb - MAX(0.0, MIN(xy, MIN(xz, xy + xz)));
+      hix = hixb - MAX(0.0, MAX(xy, MAX(xz, xy + xz)));
       loy = loyb - MIN(0.0, yz);
       hiy = hiyb - MAX(0.0, yz);
       loz = lozb;
