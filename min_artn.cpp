@@ -2001,7 +2001,11 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
     if (n >= 2){
       dstev_(&jobs, &n, d_bak, e_bak, z, &ldz, work, &info);
 
-      if (info != 0) error->all(FLERR,"ARTn: dstev_ error in Lanczos subroute");
+      if (info != 0){
+	char str[MAXLINE];
+        sprintf(str, "ARTn: dstev_ error in Lanczos subroute. Error Info = %i. \n(Info < 0: the i-th argument had an illegal value; Info > 0: i off-diagonal elements did not converged to zero.", info);
+       	error->all(FLERR,str);
+      }
 
       eigen1 = eigen2; eigen2 = d_bak[0];
     }
@@ -3022,6 +3026,9 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
       hiy = hiyb - MAX(0.0, yz);
       loz = lozb;
       hiz = hizb;
+      lx = hix - lox;
+      ly = hiy - loy;
+      lz = hiz - loz;
     }
     fgets(oneline,MAXLINE,fp);
     if (oneline[strlen("ITEM: ATOMS id type x")] == 's') flag_scale = 1;
