@@ -21,12 +21,15 @@
 #include "string.h"
 #include "timer.h"
 #include "update.h"
+#include "dump_atom.h"
 #define MAXLINE 512
 //#define DEBUG
 
 #define ZERO  1.e-10
 
 using namespace LAMMPS_NS;
+
+
 
 /* -------------------------------------------------------------------------------------------------
  * lapack or MKL-lapack is used to evaluate the lowest eigenvalue of the matrix in Lanczos.
@@ -44,6 +47,26 @@ extern void dstev_(char *, int*, double *, double *, double *, int *, double *, 
 
 enum{MAXITER,MAXEVAL,ETOL,FTOL,DOWNHILL,ZEROALPHA,ZEROFORCE,ZEROQUAD};
 
+// Define a new dump atom class
+namespace LAMMPS_NS{
+class ARTnDump : public DumpAtom{
+  public:
+    ARTnDump(LAMMPS *lmp, int narg, char **arg) :DumpAtom(lmp, narg, arg){
+    }
+    void header_item(bigint ndump){
+      fprintf(fp,"ITEM: TIMESTEP\n");
+      fprintf(fp,BIGINT_FORMAT "\n",update->ntimestep);
+      fprintf(fp,"ITEM: NUMBER OF ATOMS\n");
+      fprintf(fp,BIGINT_FORMAT "\n",ndump);
+      fprintf(fp,"ITEM: BOX BOUNDS %s\n",boundstr);
+      fprintf(fp,"%.9f %.9f\n",boxxlo,boxxhi);
+      fprintf(fp,"%.9f %.9f\n",boxylo,boxyhi);
+      fprintf(fp,"%.9f %.9f\n",boxzlo,boxzhi);
+      fprintf(fp,"ITEM: ATOMS %s\n",columns);
+    }
+};
+}
+
 /* -------------------------------------------------------------------------------------------------
  * Constructor of ARTn
 ------------------------------------------------------------------------------------------------- */
@@ -52,6 +75,7 @@ MinARTn::MinARTn(LAMMPS *lmp): MinLineSearch(lmp)
   random = NULL;
   pressure = NULL;
   dumpmin = dumpsad = dumpevent =  NULL;
+  dumpmin_outside = dumpsad_outside = false;
   egvec = x0tmp = x00 = fperp = NULL;
 
   fp1 = fp2 = fp_sadlpress =  NULL;
@@ -981,22 +1005,51 @@ void MinARTn::read_control()
   char **tmp;
   memory->create(tmp, 5, MAX(MAX(10,strlen(fmin)+1),MAX(strlen(fsad)+1,strlen(fproc)+1)), "ARTn string");
 
-  if (strcmp(fmin, "NULL") != 0){
-    strcpy(tmp[0],"ARTnmin");
-    strcpy(tmp[1],"all");
-    strcpy(tmp[2],"atom");
-    strcpy(tmp[3],"1");
-    strcpy(tmp[4],fmin);
-    if(dump_min_every) dumpmin = new DumpAtom(lmp, 5, tmp);
+  char **format;
+  memory->create(format, 2, 30, "ARTn format");
+  strcpy(format[0],"format");
+  strcpy(format[1],"%d %d %.9f %.9f %.9f");
+  int idump;
+  for (idump = 0; idump < output-> ndump; idump++){
+    if (strcmp("ARTnmin", output->dump[idump]->id) == 0) break;
+  }
+  if (idump == output->ndump) {
+    if (strcmp(fmin, "NULL") != 0){
+      strcpy(tmp[0],"ARTnmin");
+      strcpy(tmp[1],"all");
+      strcpy(tmp[2],"atom");
+      strcpy(tmp[3],"1");
+      strcpy(tmp[4],fmin);
+      if(dump_min_every) dumpmin = new ARTnDump(lmp, 5, tmp);
+      dumpmin->modify_params(2, format);
+    }
+  }else{
+    if(dump_min_every) {
+      dumpmin = output->dump[idump];
+      dumpmin_outside = true;
+    }
   }
 
-  if (strcmp(fsad, "NULL") != 0){
-    strcpy(tmp[0],"ARTnsad");
-    strcpy(tmp[1],"all");
-    strcpy(tmp[2],"atom");
-    strcpy(tmp[3],"1");
-    strcpy(tmp[4],fsad);
-    if(dump_sad_every) dumpsad = new DumpAtom(lmp, 5, tmp);
+  for (idump = 0; idump < output-> ndump; idump++){
+    if (strcmp("ARTnsad", output->dump[idump]->id) == 0) break;
+  }
+  if (idump == output->ndump) {
+    if (strcmp(fsad, "NULL") != 0){
+      strcpy(tmp[0],"ARTnsad");
+      strcpy(tmp[1],"all");
+      strcpy(tmp[2],"atom");
+      strcpy(tmp[3],"1");
+      strcpy(tmp[4],fsad);
+      if(dump_sad_every) {
+	dumpsad = new ARTnDump(lmp, 5, tmp);
+        dumpsad->modify_params(2, format);
+      }
+    }
+  }else{
+    if(dump_sad_every) {
+      dumpsad = output->dump[idump];
+      dumpsad_outside = true;
+    }
   }
 
   if (strcmp(fproc, "NULL") != 0){
@@ -1005,10 +1058,11 @@ void MinARTn::read_control()
     strcpy(tmp[2],"atom");
     strcpy(tmp[3],"1");
     strcpy(tmp[4],fproc);
-    if(dump_event_every) dumpevent = new DumpAtom(lmp, 5, tmp);
+    if(dump_event_every) dumpevent = new ARTnDump(lmp, 5, tmp);
   }
 
   memory->destroy(tmp);
+  memory->destroy(format);
 
   delete []fmin;
   delete []fsad;
@@ -1063,8 +1117,8 @@ void MinARTn::artn_init()
   delete [] recv;
   memory->destroy(llist);
 
-  if (dumpmin) dumpmin->init();
-  if (dumpsad) dumpsad->init();
+  if (dumpmin && !dumpmin_outside) dumpmin->init();
+  if (dumpsad && !dumpsad_outside) dumpsad->init();
   if (dumpevent) dumpevent->init();
 
 return;
@@ -2459,8 +2513,8 @@ void MinARTn::artn_final()
   if (glist)  delete [] glist;
 
   if (random)  delete random;
-  if (dumpmin) delete dumpmin;
-  if (dumpsad) delete dumpsad;
+  if (dumpmin && !dumpmin_outside) delete dumpmin;
+  if (dumpsad && !dumpsad_outside) delete dumpsad;
   if (dumpevent) delete dumpevent;
 
 return;

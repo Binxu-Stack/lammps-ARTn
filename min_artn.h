@@ -8,6 +8,7 @@ MinimizeStyle(artn,MinARTn)
 #define ARTN_H
 
 #include "dump_atom.h"
+#include "dump.h"
 #include "random_park.h"
 #include "min_linesearch.h"
 
@@ -50,9 +51,11 @@ private:
 
   int sad_found;
   int ref_id, min_id, sad_id, ref_0;
-  DumpAtom * dumpmin;
-  DumpAtom * dumpsad;
-  DumpAtom * dumpevent;
+  Dump* dumpmin;
+  bool dumpmin_outside;
+  Dump* dumpsad;
+  bool dumpsad_outside;
+  Dump* dumpevent;
   Compute *pressure;
 
   int me, np;
