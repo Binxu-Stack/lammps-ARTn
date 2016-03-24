@@ -47,25 +47,7 @@ extern void dstev_(char *, int*, double *, double *, double *, int *, double *, 
 
 enum{MAXITER,MAXEVAL,ETOL,FTOL,DOWNHILL,ZEROALPHA,ZEROFORCE,ZEROQUAD};
 
-// Define a new dump atom class
-namespace LAMMPS_NS{
-class ARTnDump : public DumpAtom{
-  public:
-    ARTnDump(LAMMPS *lmp, int narg, char **arg) :DumpAtom(lmp, narg, arg){
-    }
-    void header_item(bigint ndump){
-      fprintf(fp,"ITEM: TIMESTEP\n");
-      fprintf(fp,BIGINT_FORMAT "\n",update->ntimestep);
-      fprintf(fp,"ITEM: NUMBER OF ATOMS\n");
-      fprintf(fp,BIGINT_FORMAT "\n",ndump);
-      fprintf(fp,"ITEM: BOX BOUNDS %s\n",boundstr);
-      fprintf(fp,"%.9f %.9f\n",boxxlo,boxxhi);
-      fprintf(fp,"%.9f %.9f\n",boxylo,boxyhi);
-      fprintf(fp,"%.9f %.9f\n",boxzlo,boxzhi);
-      fprintf(fp,"ITEM: ATOMS %s\n",columns);
-    }
-};
-}
+
 
 /* -------------------------------------------------------------------------------------------------
  * Constructor of ARTn
@@ -1008,7 +990,7 @@ void MinARTn::read_control()
   char **format;
   memory->create(format, 2, 30, "ARTn format");
   strcpy(format[0],"format");
-  strcpy(format[1],"%d %d %.9f %.9f %.9f");
+  strcpy(format[1],"%d %d %.16f %.16f %.16f");
   int idump;
   for (idump = 0; idump < output-> ndump; idump++){
     if (strcmp("ARTnmin", output->dump[idump]->id) == 0) break;
@@ -1020,7 +1002,7 @@ void MinARTn::read_control()
       strcpy(tmp[2],"atom");
       strcpy(tmp[3],"1");
       strcpy(tmp[4],fmin);
-      if(dump_min_every) dumpmin = new ARTnDump(lmp, 5, tmp);
+      if(dump_min_every) dumpmin = new DumpAtom(lmp, 5, tmp);
       dumpmin->modify_params(2, format);
     }
   }else{
@@ -1041,7 +1023,7 @@ void MinARTn::read_control()
       strcpy(tmp[3],"1");
       strcpy(tmp[4],fsad);
       if(dump_sad_every) {
-	dumpsad = new ARTnDump(lmp, 5, tmp);
+	dumpsad = new DumpAtom(lmp, 5, tmp);
         dumpsad->modify_params(2, format);
       }
     }
@@ -1058,7 +1040,7 @@ void MinARTn::read_control()
     strcpy(tmp[2],"atom");
     strcpy(tmp[3],"1");
     strcpy(tmp[4],fproc);
-    if(dump_event_every) dumpevent = new ARTnDump(lmp, 5, tmp);
+    if(dump_event_every) dumpevent = new DumpAtom(lmp, 5, tmp);
   }
 
   memory->destroy(tmp);
@@ -1922,11 +1904,11 @@ int MinARTn::min_converge(int maxiter, const int flag)
     if (flag == 2) reset_coords();
     else if (flag == 1) reset_x00();
     // output for thermo, dump, restart files
-    if (output->next == ntimestep) {
-      timer->stamp();
-      output->write(ntimestep);
-      timer->stamp(Timer::OUTPUT);
-    }
+    //if (output->next == ntimestep) {
+    //  timer->stamp();
+    //  output->write(ntimestep);
+    //  timer->stamp(Timer::OUTPUT);
+    //}
   }
 
 return MAXITER;
@@ -2874,11 +2856,11 @@ int MinARTn::SD_min_converge(int maxiter, const int flag)
     else if (flag == 1) reset_x00();
 
     // output for thermo, dump, restart files
-    if (output->next == ntimestep) {
-      timer->stamp();
-      output->write(ntimestep);
-      timer->stamp(Timer::OUTPUT);
-    }
+    //if (output->next == ntimestep) {
+    //  timer->stamp();
+    //  output->write(ntimestep);
+    //  timer->stamp(Timer::OUTPUT);
+    //}
   }
   return MAXITER;
    
@@ -3004,11 +2986,11 @@ int MinARTn::min_converge_fire(int maxiter){
       if (fdotf < update->ftol*update->ftol) return FTOL;
     }
 
-    if (output->next == ntimestep) {
-      timer->stamp();
-      output->write(ntimestep);
-      timer->stamp(Timer::OUTPUT);
-    }
+    //if (output->next == ntimestep) {
+    //  timer->stamp();
+    //  output->write(ntimestep);
+    //  timer->stamp(Timer::OUTPUT);
+    //}
 
 
   }
