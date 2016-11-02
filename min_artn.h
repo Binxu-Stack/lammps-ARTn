@@ -105,6 +105,7 @@ private:
   // for harmonic well
   int flag_dump_direction; // use dump direction file as the initial kick direction
   int flag_deformation_gradient; // use deformation gradient as the initial kick direction
+  int flag_random_deformation_gradient; // use random deformation gradient as the initial kick direction
   double deformation_gradient[9]; // deformation gradient, in the component order 11 12 13 21 22 23 31 32 33
   double random_kick_factor; // add a random disturbation to the dump direction.
   double init_step_size;   // Size of initial displacement
