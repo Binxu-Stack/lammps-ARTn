@@ -995,9 +995,10 @@ void MinARTn::read_control()
   memory->create(tmp, 5, MAX(MAX(10,strlen(fmin)+1),MAX(strlen(fsad)+1,strlen(fproc)+1)), "ARTn string");
 
   char **format;
-  memory->create(format, 2, 30, "ARTn format");
+  memory->create(format, 3, 30, "ARTn format");
   strcpy(format[0],"format");
-  strcpy(format[1],"%d %d %.16f %.16f %.16f");
+  strcpy(format[1],"line");
+  strcpy(format[2],"%i %i %20.16g %20.16g %20.16g");
   int idump;
   for (idump = 0; idump < output-> ndump; idump++){
     if (strcmp("ARTnmin", output->dump[idump]->id) == 0) break;
@@ -1011,7 +1012,7 @@ void MinARTn::read_control()
       strcpy(tmp[4],fmin);
       if (dump_min_every) {
 	dumpmin = new DumpAtom(lmp, 5, tmp);
-	dumpmin->modify_params(2, format);
+	dumpmin->modify_params(3, format);
       }
     }
   }else{
@@ -1034,7 +1035,7 @@ void MinARTn::read_control()
       strcpy(tmp[4],fsad);
       if(dump_sad_every) {
 	dumpsad = new DumpAtom(lmp, 5, tmp);
-        dumpsad->modify_params(2, format);
+        dumpsad->modify_params(3, format);
       }
     }
   }else{
@@ -3079,6 +3080,9 @@ int MinARTn::min_converge_fire(int maxiter){
  *  script.
  * ----------------------------------------------------------------*/
 void MinARTn::read_dump_direction(char * file, double * delpos){
+  if (me == 0 && screen){
+    fprintf(screen,"\nNOTE: atom_modify map hash or atom_modify map array should be used in the LAMMPS input file when using ARTn fdump feature\n");
+  }
   FILE * fp;
   char str[MAXLINE], oneline[MAXLINE], *token;
   int flag_scale = 0;
@@ -3106,6 +3110,7 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
     sscanf(oneline,BIGINT_FORMAT,&natoms);
   }
   MPI_Bcast(&natoms, 1, MPI_INT,0,world);
+  // 3N + 1 to set id to position x[id*3], e.g. id = 1 are stored in dumppos[1*3]
   dumppos = new double [3*natoms+3];
   if (me == 0){
     fgets(oneline,MAXLINE,fp);
@@ -3160,8 +3165,10 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
   double dx,dy,dz;
   int nlocal = atom->nlocal;
   xvec = atom->x[0];
+  tagint tag;
   for (bigint i = 1; i <= natoms; ++i){
-    ilocal = atom->map(i);
+    tag = static_cast<tagint>(i);
+    ilocal = atom->map(tag);
     if (ilocal >= 0 && ilocal < nlocal){
       int n = ilocal*3;
       dx = dumppos[i*3] - xvec[n];
