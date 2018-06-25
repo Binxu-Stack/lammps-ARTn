@@ -1,0 +1,169 @@
+
+#===================================== ARTn based on LAMMPS ========================================
+# global control parameters
+max_num_events      20                  # Max number of events
+min_fire            0                   # use FIRE to do minimization both in push back & push forward
+flag_press          1                   # Flag whether the pressure info will be monitored
+flag_sadl_press     1                   # Flag whether the sadlle point pressure info will be monitored
+random_seed         87932               # Seed for random generator
+init_config_id      0                   # ID of the initial stable configuration
+flag_push_over      1                   # Flag whether to push over saddle to find another minimum
+events_per_atom     1                   # Find designed events per atom, set to 0 to shutoff this method
+
+# activation, harmonic well escape
+group_4_activat     artn                # The lammps group ID of the atoms that can be activated
+flag_dump_direction 0                   # Use dump direction file as the initial kick direction
+random_kick_factor 0                   # Norm of the initial displacement (activation)
+cluster_radius      3.7                 # The radius of the cluster that will be activated
+init_step_size      0.1                 # Norm of the initial displacement (activation)
+basin_factor        2.4                 # Factor multiplying Increment_Size for leaving the basin
+min_num_ksteps      3                   # Min # of k-steps before calling Lanczos
+max_perp_move_h     5                   # Max # of perpendicular steps leaving basin
+max_iter_basin      2000                # Maximum # of iteration for leaving the basin
+increment_size      0.08                # Overall scale for the increment moves
+force_th_perp_h     0.2                 # Perpendicular force threshold in harmonic well
+eigen_th_well       -0.5                # Eigenvalue threshold for leaving basin
+
+# activation, converging to saddle
+max_activat_iter    5000                # Maximum # of iteraction to approach the saddle
+fire_lanczos_every  5                   # call lanczos every # fire steps approaching saddle
+use_fire            1                   # Use FIRE for perpendicular steps approaching the saddle
+para_factor         1                   # Factor use to make parallel force nagative when approaching saddle
+eigen_th_fail       0.0001              # Eigen threshold for failure in searching the saddle
+force_th_saddle     0.01                # Force threshold for convergence at saddle point
+conv_perp_inc       3                   # The basic steps of max # of perpendicular steps approaching the saddle
+max_perp_moves_c    70                  # Maximum # of perpendicular steps approaching the saddle
+force_th_perp_sad   0.005               # Perpendicular force threshold approaching saddle point
+
+# confirmation of new found saddle
+disp_sad2min_thr    -1                  # Minimum distance between saddle and original minimum
+flag_push_back      0                   # Push back the saddle to check its linkage to the start
+push_over_saddle    0.2                 # Scale of displacement when pushing over the saddle
+max_disp_tol        0.5                 # Tolerance displacement to claim the saddle is linked
+max_ener_tol        0.1                 # Tolerance displacement to claim the saddle is linked
+flag_relax_sad      0                   # Further relax the newly found saddle via SD algorithm
+SD_steps            7                   # Steepest Descent steps before CG minimizationm
+
+# Lanczos related parameters
+num_lancz_vec_h     25                  # Num of vectors included in Lanczos for escaping well
+num_lancz_vec_c     15                  # Num of vectors included in Lanczos for convergence
+del_disp_lancz      0.001               # Step of the numerical derivative of forces in Lanczos
+eigen_th_lancz      0.01                # Eigenvalue threshold for Lanczos convergence
+
+# Metropolis
+temperature         -0.03               # Temperature for Metropolis algorithm, in eV
+atom_disp_thr       0.4                 # Displacement threshold to identify an atom as displaced
+
+# Output related parameters
+log_file            log.artn            # File to write ARTn log info; NULL to skip
+log_level           1                   # Level of ARTn log ouput: 1, high; 0, low.
+sadl_press_file     sadl_press.dat      # File to write ARTn sadl pressure info; NULL to skip
+print_freq          1                   # Print ARTn log ouput frequency, if log_level is 1.
+event_list_file     log.event           # File to record the event info; NULL to skip
+dump_min_config     min.lammpstrj       # File for atomic dump of stable configurations; NULL to skip
+dump_sad_config     sad.lammpstrj       # file for atomic dump of saddle configurations; NULL to skip
+dump_event_config   eve.lammpstrj       # file for atomic dump of event configurations; NULL to skip
+dump_min_every      1                   # Dump min configuration every # step (if 0, no dump)
+dump_sad_every      1                   # Dump sad configuration every # step (if 0, no dump)
+dump_event_every    0                   # Dump event process configuration every # step (if 0, no dump)
+#====================================================================================================
+
+Minimizing the initial configuration, id = 0 ....
+  - Minimizer stop condition  : force tolerance
+  - Current (ref) energy (eV) : -46194.160433
+  - Temperature   (eV)        : -0.030000
+  - Force two-norm final      : 0.000081
+  - Pressure tensor           : -11.2459 -336.256 347.451 -486.535 289.927 -478.539
+
+Attempt 1, new activation centered on atom 8055 with total 13 atoms. 0 success till now.
+  Stage 1, search for the saddle from configuration 0
+  ----------------------------------------------------------------------------------------------------
+    Steps  E-Eref m_perp trial nlanc ftot       fpar        fperp     eigen       delr   evalf
+  ----------------------------------------------------------------------------------------------------
+       0    0.01907   3   3     0    0.47807   -0.44075    0.18519    0.00000    0.10677 1184
+       1    0.12337   6   6     0    1.01079   -0.97291    0.27412    0.00000    0.34901 1191
+       2    0.30611   6   6     0    1.50090   -1.45546    0.36651    0.00000    0.60591 1198
+       3    0.55591   6   6     0    1.92351   -1.87544    0.42730    0.00000    0.87549 1205
+       4    0.86685   6   6    25    2.27628   -2.22927    0.46024    0.05342    1.15316 1237
+       5    1.23446   6   6    25    2.57428   -2.53100    0.47008   -0.02286    1.43355 1269
+       6    1.65635   6   6    25    2.83676   -2.79756    0.46995   -0.00704    1.71282 1301
+       7    2.12502   6   6    25    3.04769   -3.01165    0.46732    0.00065    1.99022 1333
+       8    2.63046   6   6    25    3.22168   -3.18729    0.46949   -0.21302    2.26636 1365
+       9    3.16340   6   6     9    3.35963   -3.32543    0.47819   -0.33564    2.54198 1381
+      10    3.71520   6   6     5    3.46648   -3.43120    0.49332   -0.58061    2.81712 1393
+  ----------------------------------------------------------------------------------------------------
+  Stage 1 succeeded after 10 iterations, continue searching based on eigen-vector.
+  Stage 2, converge to the saddle by using Lanczos
+  ----------------------------------------------------------------------------------------------------
+    Iter   E-Eref m_perp trial nlanc ftot      fpar        fperp     eigen     delr    h.h' evalf
+  ----------------------------------------------------------------------------------------------------
+       0    3.71401   3   3     3    3.46491    0.32785    3.44936  -0.5692   2.8169 -0.108 1399
+       1    3.75642   4   4     7    3.44499    0.42385    3.41881  -0.6557   2.8303  0.942 1414
+       2    3.81097   5   5     5    3.42691    0.39466    3.40411  -0.6235   2.8612  0.985 1428
+       3    3.86064   6   6     5    3.41067    0.36522    3.39106  -0.4979   2.9031  0.988 1443
+       4    3.91182   7   7    15    3.39092    0.51948    3.35089  -0.2659   2.9551  0.826 1469
+       5    3.97963   8   8    12    3.36620    0.61128    3.31023  -0.3307   3.0107  0.880 1493
+       6    4.05648   9   9     4    3.33224    0.57293    3.28262  -0.3924   3.0671  0.997 1510
+       7    4.12408  10  10     7    3.28877    0.62461    3.22891  -0.4841   3.1288  0.961 1531
+       8    4.19268  11  11     3    3.23333    0.56406    3.18375  -0.5685   3.1963  0.998 1549
+       9    4.24690  12  12     3    3.16427    0.51125    3.12270  -0.6490   3.2689  0.997 1568
+      10    4.28497  13  13     4    3.08420    0.46295    3.04926  -0.6461   3.3456  0.994 1589
+      11    4.30518  14  14     5    2.99659    0.40300    2.96937  -0.6013   3.4250  0.988 1612
+      12    4.30652  15  15     5    2.89691    0.34534    2.87626  -0.5922   3.5044  0.990 1636
+      13    4.28810  16  16     4    2.78423    0.27267    2.77084  -0.5925   3.5830  0.997 1660
+      14    4.24648  17  17     3    2.66019    0.18614    2.65367  -0.6097   3.6618  0.998 1684
+      15    4.18082  18  18     4    2.52559    0.11441    2.52300  -0.6069   3.7408  0.994 1710
+      16    4.09169  19  19     3    2.38231    0.02382    2.38219  -0.6174   3.8183  0.998 1736
+      17    3.98071  20  20     3    2.23279    0.01301    2.23276  -0.6442   3.8201  0.998 1763
+      18    3.85929  21  21     3    2.08018    0.00906    2.08016  -0.6656   3.8079  0.999 1791
+      19    3.72876  22  22     3    1.92809    0.00861    1.92807  -0.6900   3.7888  0.998 1820
+      20    3.59007  23  23     3    1.77935    0.00815    1.77933  -0.6973   3.7661  1.000 1850
+      21    3.44399  24  24     3    1.63635    0.01026    1.63632  -0.7022   3.7402  0.999 1881
+      22    3.29122  25  25     3    1.49949    0.00730    1.49947  -0.7117   3.7136  1.000 1913
+      23    3.13268  26  26     3    1.36730    0.00221    1.36730  -0.7281   3.6828  0.999 1946
+      24    2.97030  27  27     3    1.23849   -0.00142    1.23849  -0.7131   3.6465  1.000 1980
+      25    2.80676  28  28     3    1.11276   -0.00499    1.11275  -0.7031   3.6068  0.999 2015
+      26    2.64540  29  29     3    0.98932   -0.00806    0.98929  -0.6939   3.5644  0.999 2051
+      27    2.49074  30  30     3    0.86018   -0.00399    0.86018  -0.6814   3.5209  0.999 2088
+      28    2.35029  31  31     3    0.72316   -0.00082    0.72316  -0.6595   3.4833  0.999 2126
+      29    2.23127  32  32     3    0.58873    0.00214    0.58872  -0.6443   3.4519  0.998 2165
+      30    2.13645  33  33     3    0.46839    0.00238    0.46838  -0.6266   3.4263  0.998 2205
+      31    2.06392  34  34     3    0.37007    0.00414    0.37005  -0.6213   3.4036  0.998 2246
+      32    2.00858  35  35     3    0.29626    0.00504    0.29622  -0.6225   3.3850  0.999 2288
+      33    1.96504  36  36     3    0.24225    0.00549    0.24219  -0.6212   3.3701  0.999 2331
+      34    1.92912  37  37     3    0.20397    0.00478    0.20392  -0.6233   3.3596  1.000 2375
+      35    1.89758  38  38     3    0.18030    0.00512    0.18023  -0.6298   3.3532  1.000 2420
+      36    1.86712  39  39     3    0.17010    0.00662    0.16997  -0.6439   3.3535  1.000 2466
+      37    1.83406  40  40     3    0.16897    0.01280    0.16848  -0.6525   3.3644  0.999 2514
+      38    1.79746  41  41     3    0.16202    0.02856    0.15948  -0.6552   3.3945  0.997 2562
+      39    1.76376  42  42     3    0.14764    0.02919    0.14473  -0.6976   3.4541  0.988 2613
+      40    1.72962  43  43     3    0.12478    0.01785    0.12349  -0.7511   3.5131  0.999 2663
+      41    1.70999  44  44     3    0.06508    0.01863    0.06236  -0.7972   3.5734  0.998 2714
+      42    1.70460  45  45     3    0.03575    0.00276    0.03564  -0.8546   3.6217  0.999 2766
+      43    1.70234  46  46     3    0.02341    0.00053    0.02341  -0.7954   3.6469  0.999 2819
+      44    1.70120  47  47     3    0.01659    0.00005    0.01659  -0.8381   3.6624  1.000 2873
+      45    1.70055  48  48     3    0.01313   -0.00001    0.01313  -0.8443   3.6732  1.000 2928
+      46    1.70016  49  49     3    0.01599   -0.00002    0.01599  -0.8476   3.6808  1.000 2984
+      47    1.69995  50  50     3    0.03452   -0.00001    0.03452  -0.8493   3.6860  1.000 3041
+      48    1.69988  51  51     3    0.00794   -0.00000    0.00794  -0.8502   3.6870  1.000 3099
+  ----------------------------------------------------------------------------------------------------
+  Stage 2 converged at a new saddle after 48 iterations, dE = 1.69988
+    The distance between new found saddle and min-0 is 3.68704, > -1, acceptable.
+  Stage 3, push over the new saddle, Enew: -46192.5; Eref= -46194.2. Relaxing...
+    Relaxed to a nearby minimum to sad-1
+    - Current  min  energy (eV) : -46192.787202
+    - Force two-norm final      : 0.000200
+      - Reference     energy (eV) : -46194.160433
+      - Minimizer stop condition  : max iterations
+      - Distance to min-00000000  : 4.34902
+  Stage 3 done, the new min (E= -46192.8) of ID 1 is rejected by Metropolis.
+
+#=========================================================================================
+# Total number of ARTn attempts : 1
+# Number of new found saddle    : 1 (100.0% success)
+# Number of accepted new saddle : 1 (100.0% acceptance)
+# Overall mission success rate  : 100.0%
+# Number of new minimumi found  : 1
+# Number of accepted minima     : 0 (0% acceptance)
+# Number of force evaluation    : 23125
+#=========================================================================================

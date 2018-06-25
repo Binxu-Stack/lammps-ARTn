@@ -1,0 +1,61 @@
+# ARTn control parameters, sequence does not matter
+random_seed                      87932  # Seed for random generator
+temperature                       -0.03  # Temperature for Metropolis algorithm, in eV
+
+# for artn
+max_num_events                    20   # Max number of events
+events_per_atom                    1
+max_activat_iter                   5000  # Maximum # of iteraction to approach the saddle
+increment_size                    0.08  # Overall scale for the increment moves
+group_4_activat                    artn  # The lammps group ID of the atoms that can be activated
+cluster_radius                     3.7  # The radius of the cluster that will be activated
+init_step_size                     0.1  # Norm of the initial displacement (activation)
+use_fire                             1  # Use FIRE for perpendicular steps approaching the saddle?
+flag_push_over                       1
+min_fire                             0
+
+# harmonic well
+#deformation_gradient  1 0.3 0 0 1 0 0 0 1
+#random_kick_factor                 0.2
+basin_factor                       2.4  # Factor multiplying Increment_Size for leaving the basin
+max_perp_move_h                      5  # Max # of perpendicular steps leaving basin
+min_num_ksteps                       3  # Min # of k-steps before calling Lanczos
+eigen_th_well                     -0.5  # Eigenvalue threshold for leaving basin
+max_iter_basin                      2000  # Maximum # of iteration for leaving the basin
+force_th_perp_h                    0.2  # Perpendicular force threshold in harmonic well
+
+# lanczos
+num_lancz_vec_h                     25  # Num of vectors included in Lanczos for escaping well
+num_lancz_vec_c                     15  # Num of vectors included in Lanczos for convergence
+del_disp_lancz                   0.001  # Step of the numerical derivative of forces in Lanczos
+eigen_th_lancz                    0.01  # Eigenvalue threshold for Lanczos convergence
+
+# convergence
+force_th_saddle                   0.01  # Force threshold for convergence at saddle point
+conv_perp_inc                        3  # Increment of max # of perpendicular steps when fpar > -1.0
+push_over_saddle                   0.2  # Scale of displacement when pushing over the saddle
+eigen_th_fail                   0.0001  # Eigen threshold for failure in searching the saddle
+max_perp_moves_c                    70  # Maximum # of perpendicular steps approaching the saddle
+force_th_perp_sad               0.005  # Perpendicular force threshold approaching saddle point
+SD_steps                             7
+
+# push back
+flag_push_back                       0  # Push back the saddle to confirm its link with the initial min
+flag_relax_sad                       0  # Further relax the newly found saddle via SD algorithm
+max_disp_tol                       0.5  # Tolerance displacement to claim the saddle is linked
+max_ener_tol                       0.1  # Tolerance displacement to claim the saddle is linked
+flag_press                           0  # Flag whether the pressure info will be monitored
+atom_disp_thr                      0.4  # Displacement threshold to identify an atom as displaced
+
+# for ouput
+flag_press                           1
+flag_sadl_press                      1
+log_file                      log.artn  # File to write ARTn log info; NULL to skip
+log_level                            1  # Level of ARTn log ouput: 1, high; 0, low.
+print_freq                           1  # Print ARTn log ouput frequency, if log_level is 1.
+event_list_file              log.event  # File to record the event info; NULL to skip
+init_config_id                       0  # ID of the initial stable configuration
+dump_min_config          min.lammpstrj  # File for atomic dump of stable configurations; NULL to skip
+dump_sad_config          sad.lammpstrj  # file for atomic dump of saddle configurations; NULL to skip
+dump_min_every                       1  # Dump min configuration every # step (if 0, no dump)
+dump_sad_every                       1  # Dump sad configuration every # step (if 0, no dump)

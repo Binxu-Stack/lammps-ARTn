@@ -1,0 +1,22 @@
+# ---------- Initialize Simulation ---------------------
+units metal
+dimension 3
+boundary p p p
+atom_style atomic
+read_data data.pos
+
+# ---------- Define Interatomic Potential ---------------------
+pair_style  eam/alloy
+pair_coeff  * * ZrCu.lammps.eam Zr Cu
+group artn id 8055
+neighbor 2.0 bin
+neigh_modify delay 10 check yes
+
+# ---------- Run Minimization ---------------------
+reset_timestep 0
+fix BOX all box/relax iso 0.0 vmax 0.001
+minimize 0 1e-4 10000 10000
+unfix BOX
+
+min_style artn
+minimize 0 1e-4 10000 100000
