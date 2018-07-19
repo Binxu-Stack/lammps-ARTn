@@ -48,6 +48,7 @@ private:
   int lanczos(bool, int, int);
   int min_perp_fire(int);
   int new_min_perp_fire(int);
+  void check_freeze();
 
   int sad_found;
   int ref_id, min_id, sad_id, ref_0;
@@ -98,6 +99,7 @@ private:
   double atom_disp_thr;    // threshold to identify whether an atom is displaced or not
 
   int groupbit, ngroup;    // group bit & # of atoms for initial kick
+  int freeze_group_bit, flag_freeze;    // group bit for frozen atoms
   int that, *glist;        // ID and list for kick
   char *groupname;         // group name for initial kick
   double cluster_radius;   // radius for kick; <0, all; ==0, single; >0, cluster

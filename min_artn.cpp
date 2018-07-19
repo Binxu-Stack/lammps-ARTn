@@ -899,6 +899,14 @@ void MinARTn::read_control()
   ngroup = group->count(igroup);
   if (ngroup < 1) error->all(FLERR, "No atom is found in your desired group for activation!");
 
+  igroup = group->find("FREEZE");
+  if (igroup == -1) {
+    flag_freeze = 0;
+  }else {
+    flag_freeze = 1;
+    freeze_group_bit = group->bitmask[igroup];
+  }
+
   // group info for all
   groupall = group->find("all");
   masstot = group->mass(groupall);
@@ -1297,6 +1305,16 @@ int MinARTn::find_saddle( )
 
     // caculate egvec use lanczos
     nlanc = lanczos(flag_egvec, 1, num_lancz_vec_c);
+    if (flag_freeze){
+      for (int i = 0; i < atom->nlocal; ++i){
+	if (freeze_group_bit & atom->mask[i]){
+	  int n = 3*i;
+	  egvec[n] = 0.0;
+	  egvec[n+1] = 0.0;
+	  egvec[n+2] = 0.0;
+	}
+      }
+    }
     for (int i = 0; i < nvec; ++i) h[i] = egvec[i];
 
     hdot = hdotall = 0.;
@@ -1431,7 +1449,17 @@ int MinARTn::find_saddle( )
     // caculate egvec use lanczos
     double sign = 1.;
     nlanc = lanczos(flag_egvec, 1, num_lancz_vec_c);
-
+    if (flag_freeze){
+      for (int i = 0; i < atom->nlocal; ++i){
+	if (freeze_group_bit & atom->mask[i]){
+	  int n = 3*i;
+	  egvec[n] = 0.0;
+	  egvec[n+1] = 0.0;
+	  egvec[n+2] = 0.0;
+	}
+      }
+    }
+ 
     double tmpsum = 0., tmpsumall;
     for (int i = 0; i < nvec; ++i) tmpsum += egvec[i] * fvec[i];
     MPI_Allreduce(&tmpsum,&tmpsumall,1,MPI_DOUBLE,MPI_SUM,world);
@@ -1860,25 +1888,25 @@ void MinARTn::random_kick()
   }
 
   // minus x,y,z drift
-  double dx, dy, dz;
-  double tmp[3],tmpall[3];
-  dx = dy = dz = 0.0;
-  for (int i = 0; i < nlocal; ++i){
-    dx += delpos[i*3];
-    dy += delpos[i*3+1];
-    dz += delpos[i*3+2];
-  }
-  tmp[0] = dx; tmp[1] = dy; tmp[2] = dz;
-  MPI_Allreduce(tmp, tmpall, 3, MPI_DOUBLE, MPI_SUM, world);
-  //if(me == 0)fprintf(screen, "\n dx = %f, dy = %f, dz = %f \n", tmpall[0], tmpall[1] ,tmpall[2]);
-  dx = tmpall[0] / natoms;
-  dy = tmpall[1] / natoms;
-  dz = tmpall[2] / natoms;
-  for (int i = 0; i < nlocal; ++i){
-    delpos[i*3] -= dx;
-    delpos[i*3+1] -= dy;
-    delpos[i*3+2] -= dz;
-  }
+  //double dx, dy, dz;
+  //double tmp[3],tmpall[3];
+  //dx = dy = dz = 0.0;
+  //for (int i = 0; i < nlocal; ++i){
+  //  dx += delpos[i*3];
+  //  dy += delpos[i*3+1];
+  //  dz += delpos[i*3+2];
+  //}
+  //tmp[0] = dx; tmp[1] = dy; tmp[2] = dz;
+  //MPI_Allreduce(tmp, tmpall, 3, MPI_DOUBLE, MPI_SUM, world);
+  ////if(me == 0)fprintf(screen, "\n dx = %f, dy = %f, dz = %f \n", tmpall[0], tmpall[1] ,tmpall[2]);
+  //dx = tmpall[0] / natoms;
+  //dy = tmpall[1] / natoms;
+  //dz = tmpall[2] / natoms;
+  //for (int i = 0; i < nlocal; ++i){
+  //  delpos[i*3] -= dx;
+  //  delpos[i*3+1] -= dy;
+  //  delpos[i*3+2] -= dz;
+  //}
 
   MPI_Reduce(&nhit,&idum,1,MPI_INT,MPI_SUM,0,world);
   if (me == 0 && idum < 1) error->one(FLERR, "No atom to kick!");
@@ -3182,4 +3210,31 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
   }
   if (dumppos) delete []dumppos;
   if (me == 0) fclose(fp);
+}
+void MinARTn::check_freeze(){
+  int nlocal = atom->nlocal;
+  xvec = atom->x[0];
+  tagint tag;
+  double tmp;
+  double sum = 0.;
+  for (int i = 0; i < nlocal; ++i){
+    if(!(groupbit & atom->mask[i])){
+      int n = 3*i;
+      int id = atom->tag[i];
+      tmp = xvec[n]-x00[n];
+      if (tmp > ZERO){
+	fprintf(screen, "\nAtom %i displacement %f > ZERO\n", id, sqrt(tmp));
+      }
+      sum += tmp*tmp;
+      tmp = xvec[n+1]-x00[n+1];
+      sum += tmp*tmp;
+      tmp = xvec[n+2]-x00[n+2];
+      sum += tmp*tmp;
+    }
+  } 
+  double sumall;
+  MPI_Allreduce(&sum,&sumall,1,MPI_DOUBLE, MPI_SUM, world);
+  sumall = sqrt(sumall);
+  if(me == 0) fprintf(screen,"\nDisplacemnt: %f\n", sumall);
+  //return sumall;
 }
