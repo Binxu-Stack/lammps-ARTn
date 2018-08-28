@@ -1119,6 +1119,19 @@ void MinARTn::artn_init()
   delete [] recv;
   memory->destroy(llist);
 
+
+  // sort glist in the acending order
+  int tmp;
+  for (int i = 0; i < ngroup; ++ i) {
+    for (int j = i + 1; j < ngroup; ++j) {
+      if (glist[i] > glist[j]){
+	tmp = glist[i];
+	glist[i] = glist[j];
+	glist[j] = tmp;
+      }
+    }
+  }
+
   if (dumpmin && !dumpmin_outside) dumpmin->init();
   if (dumpsad && !dumpsad_outside) dumpsad->init();
   if (dumpevent) dumpevent->init();
