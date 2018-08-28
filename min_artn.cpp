@@ -1121,13 +1121,14 @@ void MinARTn::artn_init()
 
 
   // sort glist in the acending order
-  int tmp;
-  for (int i = 0; i < ngroup; ++ i) {
-    for (int j = i + 1; j < ngroup; ++j) {
-      if (glist[i] > glist[j]){
-	tmp = glist[i];
-	glist[i] = glist[j];
-	glist[j] = tmp;
+  if(me == 0) {
+    for (int i = 0; i < ngroup; ++i) {
+      for (int j = i + 1; j < ngroup; ++j) {
+	if (glist[i] > glist[j]){
+	  int tmp = glist[i];
+	  glist[i] = glist[j];
+	  glist[j] = tmp;
+	}
       }
     }
   }
