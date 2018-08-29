@@ -381,6 +381,7 @@ void MinARTn::analysis_saddle(){
       for (int i = 0; i < 6; ++i) fprintf(fp_sadlpress, " %10g", press[i]);
       fprintf(fp_sadlpress, "\n");
     }
+    fflush(fp_sadlpress);
   }
 
 }
