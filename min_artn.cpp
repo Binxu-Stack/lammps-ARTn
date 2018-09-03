@@ -2212,6 +2212,9 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
       xvec[i] = x0tmp[i];
       fvec[i] = f0[i];
     }
+    energy_force(1); ++evalf;
+    reset_coords();
+    artn_reset_vec();
   }
 
   //if (fabs(egval - 0.0) < 1e-4) {
