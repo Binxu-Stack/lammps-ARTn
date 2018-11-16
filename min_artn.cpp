@@ -2082,7 +2082,11 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
     r_k_1[n]   = 0.5 - random->uniform();
     r_k_1[n+1] = 0.5 - random->uniform();
     if(domain->dimension == 3)r_k_1[n+2] = 0.5 - random->uniform();
-    else r_k_1[n+2] = 0.;
+  }
+  if (domain->dimension == 2) {
+    for (int i = 0; i < nlocal; ++i) {
+      r_k_1[i*3+2] = 0.;
+    }
   }
   for (int i =0; i < nvec; ++i) beta_k_1 += r_k_1[i] * r_k_1[i];
 
@@ -2163,8 +2167,8 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
     if (n >= 3 && fabs((eigen2-eigen1)/eigen1) < eigen_th_lancz) {
       con_flag = 1;
       for (int i = 0; i < nvec; ++i){
-	     xvec[i] = x0tmp[i];
-	     fvec[i] = f0[i];
+	xvec[i] = x0tmp[i];
+	fvec[i] = f0[i];
       }
       egval = eigen2;
       if (flag > 0){
@@ -2172,6 +2176,10 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
         for (int i = 0; i < nvec; ++i) egvec[i] = 0.;
         for (int i = 0; i < nvec; ++i)
         for (int j = 0; j < n; ++j) egvec[i] += z[j] * lanc[j][i];
+	if (domain->dimension == 2) {
+	  for ( int i = 0; i < atom->nlocal; ++i)
+	    egvec[3*i+2] = 0.;
+	}
 
         // normalize egvec.
         double sum = 0., sumall;
@@ -2197,8 +2205,12 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
       flag_egvec = 1;
       for (int i = 0; i < nvec; ++i) egvec[i] = 0.;
       for (int i = 0; i < nvec; ++i)
-      for (int j = 0; j < n-1; ++j) egvec[i] += z[j] * lanc[j][i];
+	for (int j = 0; j < n-1; ++j) egvec[i] += z[j] * lanc[j][i];
 
+      if (domain->dimension == 2) {
+	for ( int i = 0; i < atom->nlocal; ++i)
+	  egvec[3*i+2] = 0.;
+      }
       // normalize egvec.
       double sum = 0., sumall;
       for (int i = 0; i < nvec; ++i) sum += egvec[i] * egvec[i];
@@ -2212,10 +2224,10 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
       xvec[i] = x0tmp[i];
       fvec[i] = f0[i];
     }
-    energy_force(1); ++evalf;
-    reset_coords();
-    artn_reset_vec();
   }
+  energy_force(1); ++evalf;
+  reset_coords();
+  artn_reset_vec();
 
   //if (fabs(egval - 0.0) < 1e-4) {
   //  flag_egvec = 0;
