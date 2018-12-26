@@ -1096,7 +1096,7 @@ void MinARTn::artn_init()
   fperp = fix_minimize->request_vector(6);  //6
 
   // group list
-  int *tag  = atom->tag;
+  tagint *tag  = atom->tag;
   int *mask = atom->mask;
   int *llist; memory->create(llist, MAX(1, atom->nlocal), "llist");
 
@@ -1414,7 +1414,7 @@ int MinARTn::find_saddle( )
       it_s, delE, m_perp, trial, nlanc, ftotall, fpar2all, fperp2, egval, delr, hdotall, evalf);
     }
    
-    if (egval > eigen_th_fail){
+    if (egval > eigen_th_fail || delE < -0.1){
       if (me == 0){
         if (fp1 && log_level && it_s%print_freq) fprintf(fp1, "%8d %10.5f %3d %3d %5d %10.5f %10.5f %10.5f %8.4f %8.4f %6.3f " BIGINT_FORMAT "\n",
         it_s, delE, m_perp, trial, nlanc, ftotall, fpar2all, fperp2, egval, delr, hdotall, evalf);
@@ -1752,7 +1752,7 @@ void MinARTn::random_kick()
   for (int i = 0; i < nvec; ++i) delpos[i] = 0.;
   int nlocal = atom->nlocal;
   int natoms = atom->natoms;
-  int *tag   = atom->tag;
+  tagint *tag   = atom->tag;
   int nhit = 0;
 
 
@@ -2721,11 +2721,11 @@ void MinARTn::print_info(const int flag)
   } else if (flag == 14){
     if (fp1){
       if (log_level) fprintf(fp1, "  ----------------------------------------------------------------------------------------------------\n");
-      fprintf(fp1, "  Stage %d failed, the smallest eigen value is %g > %g\n", stage, egval, eigen_th_fail);
+      fprintf(fp1, "  Stage %d failed, the smallest eigen value is %g > %g or delE = %g < -1.0\n", stage, egval, eigen_th_fail, delE);
     }
     if (screen){
       fprintf(screen, "  ----------------------------------------------------------------------------------------------------\n");
-      fprintf(screen, "  Stage %d failed, the smallest eigen value is %g > %g\n", stage, egval, eigen_th_fail);
+      fprintf(screen, "  Stage %d failed, the smallest eigen value is %g > %g or delE = %g < -1.0\n", stage, egval, eigen_th_fail, delE);
     }
 
   } else if (flag == 15){
