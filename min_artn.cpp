@@ -153,6 +153,8 @@ int MinARTn::iterate(int maxevent)
   if (events_per_atom != 0) max_num_events = events_per_atom * ngroup;
 
   //while (ievent < max_num_events){
+  int trials_atom;
+  trials_atom = 0;
   while (1){
     if (ievent >= max_num_events){
       break;
@@ -162,27 +164,36 @@ int MinARTn::iterate(int maxevent)
     }
     // activation
     stage = 1; ++nattempt;
-    int trials_atom;
-    trials_atom = 0;
+    int flag_find_saddle = 0;
     while(1) {
       int return_flag = find_saddle();
       //fail
       if (return_flag == 0){
 	stage = 1; ++nattempt;
-	++trials_atom;
+	if (events_per_atom != 0) {
+	  ++trials_atom;
 	// if trials > max, try next atom, report this atom
-	if (trials_atom > max_trials){
-	  ++iatom;
-	  trials_atom = 0;
-	  if (me == 0){
-	    fprintf(fp_failed, "%i ", glist[iatom]);
+	  if (trials_atom >= max_trials){
+	    trials_atom = 0;
+	    if (me == 0){
+	      fprintf(fp_failed, "%i ", glist[iatom]);
+	    }
+	    ++iatom;
+	    if (iatom >= ngroup) {
+	      break;
+	      flag_find_saddle = 0;
+	    }
 	  }
 	}
       //sucess
       }else{
-	trials_atom = 0;
+	flag_find_saddle = 1;
 	break;
       }
+    }
+    // saddle point is not found, go back to initial flag test
+    if (flag_find_saddle == 0) {
+      continue;
     }
     //while ((flag_test?new_find_saddle():find_saddle()) == 0) {stage = 1; ++nattempt;}
 
@@ -190,8 +201,26 @@ int MinARTn::iterate(int maxevent)
     ++sad_found;
     if (check_sad2min()) continue;
 
-    if (flag_push_back) if (push_back_sad() == 0) continue;
+    if (flag_push_back && (push_back_sad() == 0)) {
+      if (events_per_atom != 0) {
+        ++trials_atom;
+      // if trials > max, try next atom, report this atom
+        if (trials_atom >= max_trials){
+          trials_atom = 0;
+          if (me == 0){
+            fprintf(fp_failed, "%i ", glist[iatom]);
+          }
+          ++iatom;
+          if (iatom >= ngroup) {
+            break;
+          }
+        }
+      }
+      continue;
+    }
     ++sad_id;
+    // confirm saddle,  reset trials_atom
+    trials_atom = 0;
 
     if (flag_relax_sad) sad_converge(max_conv_steps);
 
