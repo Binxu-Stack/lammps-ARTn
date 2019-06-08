@@ -62,7 +62,7 @@ MinARTn::MinARTn(LAMMPS *lmp): MinLineSearch(lmp)
 
   fp1 = fp2 = fp_sadlpress =  NULL;
   glist = NULL;
-  groupname = flog = fevent = fconfg = c_fsadpress = fdump_direction = NULL;
+  groupname = flog = fevent = fconfg = c_fsadpress = fdump_direction = fdelta_direction = NULL;
 
   char *id_press = new char [13];
   strcpy(id_press,"thermo_press");
@@ -152,10 +152,39 @@ int MinARTn::iterate(int maxevent)
   iatom = 0;
   if (events_per_atom != 0) max_num_events = events_per_atom * ngroup;
 
-  while (ievent < max_num_events){
+  //while (ievent < max_num_events){
+  while (1){
+    if (ievent >= max_num_events){
+      break;
+    }
+    if (events_per_atom != 0 && iatom >= ngroup){
+      break;
+    }
     // activation
     stage = 1; ++nattempt;
-    while ((flag_test?new_find_saddle():find_saddle()) == 0) {stage = 1; ++nattempt;}
+    int trials_atom;
+    trials_atom = 0;
+    while(1) {
+      int return_flag = find_saddle();
+      //fail
+      if (return_flag == 0){
+	stage = 1; ++nattempt;
+	++trials_atom;
+	// if trials > max, try next atom, report this atom
+	if (trials_atom > max_trials){
+	  ++iatom;
+	  trials_atom = 0;
+	  if (me == 0){
+	    fprintf(fp_failed, "%i ", glist[iatom]);
+	  }
+	}
+      //sucess
+      }else{
+	trials_atom = 0;
+	break;
+      }
+    }
+    //while ((flag_test?new_find_saddle():find_saddle()) == 0) {stage = 1; ++nattempt;}
 
     // confirm saddle
     ++sad_found;
@@ -539,11 +568,13 @@ void MinARTn::set_defaults()
   basin_factor     = 2.5;
   max_perp_move_h  = 20;
   max_iter_basin   = 30;
+  max_trials       = 5000;
   min_num_ksteps   = 0;		
   increment_size   = 0.09;
   force_th_perp_h  = 0.5;
   eigen_th_well    = -0.01;
   flag_dump_direction = 0;
+  flag_delta_direction = 0;
   flag_deformation_gradient = 0;
   flag_random_deformation_gradient = 0;
   for (int i = 0; i < 9; ++i) deformation_gradient[i] = 0.0;
@@ -587,6 +618,8 @@ void MinARTn::set_defaults()
   dump_min_every   = 1;
   dump_sad_every   = 1;
   dump_event_every = 0;
+  memory->create(failed_ids, MAXLINE, "MINARTn:failed_ids");
+  strcpy(failed_ids, "failed_ids.dat");
 
 return;
 }
@@ -631,6 +664,10 @@ void MinARTn::read_control()
       } else if (strcmp(token1, "max_activat_iter") == 0){
 	max_activat_iter = force->inumeric(FLERR, token2);
 	if (max_activat_iter < 1) error->all(FLERR, "ARTn: max_activat_iter must be greater than 0");
+
+      } else if (strcmp(token1, "max_trials") == 0){
+	max_trials = force->inumeric(FLERR, token2);
+	if (max_activat_iter < 1) error->all(FLERR, "ARTn: max_trials must be greater than 0");
 
       } else if (strcmp(token1, "increment_size") == 0){
 	increment_size = force->numeric(FLERR, token2);
@@ -817,8 +854,22 @@ void MinARTn::read_control()
 	fdump_direction = new char [strlen(token2)+1];
 	strcpy(fdump_direction, token2);
 
+      } else if (strcmp(token1, "failed_ids") == 0){
+	if (failed_ids) memory->destroy(failed_ids);
+	memory->create(failed_ids, strlen(token2)+1, "MINARTn:failed_ids");
+	strcpy(fdump_direction, token2);
+
+      } else if (strcmp(token1, "fdelta_direction") == 0){
+	if (fdelta_direction) delete []fdelta_direction;
+	fdelta_direction = new char [strlen(token2)+1];
+	strcpy(fdelta_direction, token2);
+	flag_delta_direction = 1;
+
       } else if (strcmp(token1, "flag_dump_direction") == 0){
 	flag_dump_direction = force->inumeric(FLERR, token2);
+
+      //} else if (strcmp(token1, "flag_delta_direction") == 0){
+	//flag_delta_direction = force->inumeric(FLERR, token2);
 
 	// here to parase this command just for historic reason.
       } else if (strcmp(token1, "dump_direction_random_factor") == 0){
@@ -912,6 +963,17 @@ void MinARTn::read_control()
   groupall = group->find("all");
   masstot = group->mass(groupall);
 
+  // Open failed_id file
+  if (events_per_atom > 0) {
+    if (me == 0) {
+      fp_failed = fopen(failed_ids, "w");
+      if (fp_failed == NULL){
+        sprintf(str, "Cannot open ARTn failed_ids file: %s for writing", failed_ids);
+        error->one(FLERR,str);
+      }
+    }
+  }
+
   // open log file and output control parameter info
   if (me == 0 && flag_sadl_press && strcmp(c_fsadpress, "NULL") != 0){
     fp_sadlpress = fopen(c_fsadpress, "w");
@@ -952,6 +1014,7 @@ void MinARTn::read_control()
     fprintf(fp1, "eigen_th_well       %-18g  # %s\n", eigen_th_well, "Eigenvalue threshold for leaving basin");
     fprintf(fp1, "\n# activation, converging to saddle\n");
     fprintf(fp1, "max_activat_iter    %-18d  # %s\n", max_activat_iter, "Maximum # of iteraction to approach the saddle");
+    fprintf(fp1, "max_trials          %-18d  # %s\n", max_trials, "Maximum # of trials of each atom to find the saddle");
     fprintf(fp1, "fire_lanczos_every  %-18d  # %s\n", fire_lanczos_every, "call lanczos every # fire steps approaching saddle");
     fprintf(fp1, "use_fire            %-18d  # %s\n", use_fire, "Use FIRE for perpendicular steps approaching the saddle");
     fprintf(fp1, "para_factor         %-18g  # %s\n", para_factor, "Factor use to make parallel force nagative when approaching saddle");
@@ -980,6 +1043,7 @@ void MinARTn::read_control()
     fprintf(fp1, "log_file            %-18s  # %s\n", flog, "File to write ARTn log info; NULL to skip");
     fprintf(fp1, "log_level           %-18d  # %s\n", log_level, "Level of ARTn log ouput: 1, high; 0, low.");
     fprintf(fp1, "sadl_press_file     %-18s  # %s\n", c_fsadpress, "File to write ARTn sadl pressure info; NULL to skip");
+    fprintf(fp1, "failed_ids          %-18s  # %s\n", failed_ids, "File to write atom that has reached maximum trials");
     fprintf(fp1, "print_freq          %-18d  # %s\n", print_freq, "Print ARTn log ouput frequency, if log_level is 1.");
     fprintf(fp1, "event_list_file     %-18s  # %s\n", fevent, "File to record the event info; NULL to skip");
     fprintf(fp1, "dump_min_config     %-18s  # %s\n", fmin, "File for atomic dump of stable configurations; NULL to skip");
@@ -1759,6 +1823,9 @@ void MinARTn::random_kick()
   if (flag_dump_direction){
     read_dump_direction(fdump_direction,tmpdelpos);
   }
+  if (flag_delta_direction){
+    read_delta_direction(fdelta_direction,tmpdelpos);
+  }
   if (fabs(cluster_radius) < ZERO){ // only the cord atom will be kicked
     for (int i = 0; i < nlocal; ++i){
       if (tag[i] == that){
@@ -1896,7 +1963,7 @@ void MinARTn::random_kick()
     tmpdelpos[i] = tmpdelpos[i] * norm2_i;
   }
 
-  if (flag_dump_direction || flag_deformation_gradient){
+  if (flag_dump_direction || flag_deformation_gradient || flag_delta_direction){
     for (int i = 0; i < 3*nlocal; ++i){
       delpos[i] = delpos[i] * random_kick_factor + ( 1 - random_kick_factor) * tmpdelpos[i];
     }
@@ -2628,6 +2695,7 @@ void MinARTn::artn_final()
   if (dumpmin && !dumpmin_outside) delete dumpmin;
   if (dumpsad && !dumpsad_outside) delete dumpsad;
   if (dumpevent) delete dumpevent;
+  if (failed_ids) memory->destroy(failed_ids);
 
 return;
 }
@@ -3127,6 +3195,60 @@ int MinARTn::min_converge_fire(int maxiter){
 
   return MAXITER;
 
+}
+/*-------------------------------------------------------------------
+ *  read displacement (DELTA) for initial kick
+ *  @file: the file that contain displacement vector, each line
+ *  contain one data, in the order of id.
+ *  @delpos: displacement vector (3*nlocal element)
+ *  Important: atom_modify map hash/array shoud be used in lammps input
+ *  script.
+ * ----------------------------------------------------------------*/
+
+void MinARTn::read_delta_direction(char *file, double *delpos){
+  if (me == 0 && screen){
+    fprintf(screen,"\nNOTE: atom_modify map hash or atom_modify map array should be used in the LAMMPS input file when using ARTn fdelta feature\n");
+  }
+  FILE *fp;
+  double tmp;
+  int dimension = domain->dimension;
+  bigint natoms = atom->natoms;
+  int index = 0;
+  char str[MAXLINE], oneline[MAXLINE], *token;
+  double * filepos;
+  memory->create(filepos, dimension*natoms, "MINARTN: delta_pos");
+  if (me == 0){
+    fp = fopen(file, "r");
+    if (fp == NULL){
+       sprintf(str, "Cannot open ARTn delta direction file: %s for reading", file);
+       error->one(FLERR,str);
+    }
+    while (1) {
+      fgets(oneline,MAXLINE,fp);
+      if (feof(fp)) break;
+      sscanf(oneline,"%lg", &tmp);
+      filepos[index] = tmp;
+      ++index;
+    }
+    fclose(fp);
+  }
+  MPI_Bcast(filepos, dimension*natoms, MPI_DOUBLE, 0, world);
+  int nlocal  = atom->nlocal;
+  int ilocal;
+  tagint tag;
+  for (bigint id = 1; id <= natoms; ++id){
+    tag = static_cast<tagint>(id);
+    ilocal = atom->map(tag);
+    if (ilocal >=0 && ilocal < nlocal){
+      int n = ilocal*dimension;
+      delpos[n] = filepos[(id-1)*dimension];
+      delpos[n+1] = filepos[(id-1)*dimension+1];
+      if (dimension == 3){
+	delpos[n+2] = filepos[(id-1)*dimension+2];
+      }
+    }
+  }
+  memory->destroy(filepos);
 }
 
 /*-------------------------------------------------------------------

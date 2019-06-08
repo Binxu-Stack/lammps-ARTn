@@ -28,6 +28,7 @@ private:
 
   void random_kick();
   void read_dump_direction(char *dumpfile, double *delpos); 	// allocate direction outside the function
+  void read_delta_direction(char *deltafile, double *delpos); 	// allocate direction outside the function
 
   int find_saddle();
   int new_find_saddle();
@@ -85,6 +86,7 @@ private:
   int fire_lanczos_every;
   int max_num_events;      // Maximum number of events
   int max_activat_iter;    // Maximum number of iteractions for reaching the saddle point
+  int max_trials; 	   // Effective when setting events_per_atom; Maximum number of trials before a new saddle point is sampled
   double increment_size;   // Overall scale for the increment moves
   int use_fire;            // use FIRE to do minimization in the perpendicular direction
   int min_fire;            // use FIRE to do minimization both in push back & push forward
@@ -106,6 +108,7 @@ private:
 
   // for harmonic well
   int flag_dump_direction; // use dump direction file as the initial kick direction
+  int flag_delta_direction; // use delta direction file as the initial kick direction
   int flag_deformation_gradient; // use deformation gradient as the initial kick direction
   int flag_random_deformation_gradient; // use random deformation gradient as the initial kick direction
   double deformation_gradient[9]; // deformation gradient, in the component order 11 12 13 21 22 23 31 32 33
@@ -138,8 +141,8 @@ private:
   int    conv_perp_inc;
 
   // for output
-  FILE *fp1, *fp2, *fp_sadlpress;
-  char *flog, *fevent, *fconfg, *c_fsadpress, *fdump_direction;
+  FILE *fp1, *fp2, *fp_sadlpress,*fp_failed;
+  char *flog, *fevent, *fconfg, *c_fsadpress, *fdump_direction, *fdelta_direction, *failed_ids;
   int log_level;           // 1, all; 0, main
   int print_freq;          // default 1
   int dump_min_every;      // dump min configuration every # step
