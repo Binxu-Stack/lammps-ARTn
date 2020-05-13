@@ -1,0 +1,28 @@
+units           lj
+dimension       2
+atom_style      atomic
+atom_modify map array
+
+read_data newdata.pos
+
+pair_style lj/smooth 2.0 2.5
+# type 1 small particle 
+# type 2 large particle
+variable sigmass equal "2*sin(PI/10.0)"
+variable sigmall equal "2*sin(PI/5.0)"
+variable sigmasl equal "1.0"
+
+variable epsilonss equal "0.5"
+variable epsilonll equal "0.5"
+variable epsilonsl equal "1.0"
+
+
+pair_coeff 1 1 ${epsilonss} ${sigmass} 
+pair_coeff 2 2 ${epsilonll} ${sigmall} 
+pair_coeff 1 2 ${epsilonsl} ${sigmasl} 
+pair_modify shift yes
+thermo_modify norm no
+fix 1 all enforce2d
+minimize 0. 1e-7 10000 10000
+min_style artn
+minimize 0 1e-7 10000 10000
