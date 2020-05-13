@@ -22,6 +22,7 @@ force_th_perp_h                    0.2  # Perpendicular force threshold in harmo
 # lanczos
 num_lancz_vec_h                     25  # Num of vectors included in Lanczos for escaping well
 num_lancz_vec_c                     15  # Num of vectors included in Lanczos for convergence
+#del_disp_lancz                   1e-5  # Step of the numerical derivative of forces in Lanczos
 del_disp_lancz                   0.001  # Step of the numerical derivative of forces in Lanczos
 eigen_th_lancz                    0.01  # Eigenvalue threshold for Lanczos convergence
 
@@ -35,7 +36,7 @@ force_th_perp_sad                 0.05  # Perpendicular force threshold approach
 SD_steps                             7
 
 # push back
-flag_push_back                       0  # Push back the saddle to confirm its link with the initial min
+flag_push_back                       1  # Push back the saddle to confirm its link with the initial min
 flag_relax_sad                       0  # Further relax the newly found saddle via SD algorithm
 max_disp_tol                       0.5  # Tolerance displacement to claim the saddle is linked
 max_ener_tol                       0.1  # Tolerance displacement to claim the saddle is linked

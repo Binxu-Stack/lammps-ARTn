@@ -10,7 +10,7 @@ increment_size                    0.08  # Overall scale for the increment moves
 group_4_activat                    artn  # The lammps group ID of the atoms that can be activated
 cluster_radius                     3.7  # The radius of the cluster that will be activated
 init_step_size                     0.1  # Norm of the initial displacement (activation)
-use_fire                             1  # Use FIRE for perpendicular steps approaching the saddle?
+use_fire                             0  # Use FIRE for perpendicular steps approaching the saddle?
 flag_push_over                       1
 min_fire                             0
 
@@ -57,5 +57,5 @@ event_list_file              log.event  # File to record the event info; NULL to
 init_config_id                       0  # ID of the initial stable configuration
 dump_min_config          min.lammpstrj  # File for atomic dump of stable configurations; NULL to skip
 dump_sad_config          sad.lammpstrj  # file for atomic dump of saddle configurations; NULL to skip
-dump_min_every                       1  # Dump min configuration every # step (if 0, no dump)
-dump_sad_every                       1  # Dump sad configuration every # step (if 0, no dump)
+dump_min_every                       0  # Dump min configuration every # step (if 0, no dump)
+dump_sad_every                       0  # Dump sad configuration every # step (if 0, no dump)

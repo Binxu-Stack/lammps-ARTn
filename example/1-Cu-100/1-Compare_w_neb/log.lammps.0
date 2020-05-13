@@ -48,9 +48,9 @@ Per MPI rank memory allocation (min/avg/max) = 4.674 | 4.674 | 4.674 Mbytes
 Step Temp E_pair E_mol TotEng Press 
        0            0   -6211.6471            0   -6211.6471   -7186.1159 
       47            0   -6212.0891            0   -6212.0891   -4799.4404 
-Loop time of 0.31911 on 1 procs for 47 steps with 1793 atoms
+Loop time of 0.307631 on 1 procs for 47 steps with 1793 atoms
 
-99.9% CPU use with 1 MPI tasks x no OpenMP threads
+100.0% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = force tolerance
@@ -64,12 +64,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.31253    | 0.31253    | 0.31253    |   0.0 | 97.94
+Pair    | 0.3012     | 0.3012     | 0.3012     |   0.0 | 97.91
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0020676  | 0.0020676  | 0.0020676  |   0.0 |  0.65
+Comm    | 0.0017507  | 0.0017507  | 0.0017507  |   0.0 |  0.57
 Output  | 0          | 0          | 0          |   0.0 |  0.00
 Modify  | 0          | 0          | 0          |   0.0 |  0.00
-Other   |            | 0.004508   |            |       |  1.41
+Other   |            | 0.004676   |            |       |  1.52
 
 Nlocal:    1793 ave 1793 max 1793 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -101,9 +101,9 @@ Per MPI rank memory allocation (min/avg/max) = 3.549 | 3.549 | 3.549 Mbytes
 Step Temp E_pair E_mol TotEng Press 
        0            0   -6212.0891            0   -6212.0891   -4799.4404 
      450 1.4031554e-13   -6212.0891            0   -6212.0891   -4799.4103 
-Loop time of 1.86861 on 1 procs for 450 steps with 1793 atoms
+Loop time of 1.78317 on 1 procs for 450 steps with 1793 atoms
 
-100.0% CPU use with 1 MPI tasks x no OpenMP threads
+99.3% CPU use with 1 MPI tasks x no OpenMP threads
 
 Minimization stats:
   Stopping criterion = force tolerance
@@ -117,12 +117,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 1.6927     | 1.6927     | 1.6927     |   0.0 | 90.59
+Pair    | 1.6445     | 1.6445     | 1.6445     |   0.0 | 92.23
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 0.0085042  | 0.0085042  | 0.0085042  |   0.0 |  0.46
+Comm    | 0.0084805  | 0.0084805  | 0.0084805  |   0.0 |  0.48
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.12161    | 0.12161    | 0.12161    |   0.0 |  6.51
-Other   |            | 0.04577    |            |       |  2.45
+Modify  | 0.09114    | 0.09114    | 0.09114    |   0.0 |  5.11
+Other   |            | 0.03902    |            |       |  2.19
 
 Nlocal:    1793 ave 1793 max 1793 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
@@ -140,7 +140,7 @@ Per MPI rank memory allocation (min/avg/max) = 3.549 | 3.549 | 3.549 Mbytes
 Step Temp E_pair E_mol TotEng Press 
      450            0   -6212.0891            0   -6212.0891   -4799.4103 
      451 1.0020266e-15   -6212.0891            0   -6212.0891   -4799.4103 
-Loop time of 0.00829697 on 1 procs for 1 steps with 1793 atoms
+Loop time of 0.00809693 on 1 procs for 1 steps with 1793 atoms
 
 100.0% CPU use with 1 MPI tasks x no OpenMP threads
 
@@ -156,12 +156,12 @@ Minimization stats:
 MPI task timing breakdown:
 Section |  min time  |  avg time  |  max time  |%varavg| %total
 ---------------------------------------------------------------
-Pair    | 0.0074701  | 0.0074701  | 0.0074701  |   0.0 | 90.03
+Pair    | 0.0072072  | 0.0072072  | 0.0072072  |   0.0 | 89.01
 Neigh   | 0          | 0          | 0          |   0.0 |  0.00
-Comm    | 3.8862e-05 | 3.8862e-05 | 3.8862e-05 |   0.0 |  0.47
+Comm    | 3.767e-05  | 3.767e-05  | 3.767e-05  |   0.0 |  0.47
 Output  | 0          | 0          | 0          |   0.0 |  0.00
-Modify  | 0.00058603 | 0.00058603 | 0.00058603 |   0.0 |  7.06
-Other   |            | 0.0002019  |            |       |  2.43
+Modify  | 0.00064778 | 0.00064778 | 0.00064778 |   0.0 |  8.00
+Other   |            | 0.0002043  |            |       |  2.52
 
 Nlocal:    1793 ave 1793 max 1793 min
 Histogram: 1 0 0 0 0 0 0 0 0 0
