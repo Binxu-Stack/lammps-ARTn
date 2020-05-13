@@ -550,7 +550,7 @@ void MinARTn::metropolis()
     print_info(60);
 
     // temporary modification
-    if (temperature > 0. && (ecurrent < eref || random->uniform() < exp((eref - ecurrent)/temperature)) && ecurrent - eref > -5) acc = 1;
+    if (temperature > 0. && delE < barrier_threshold && (ecurrent < eref || random->uniform() < exp((eref - ecurrent)/temperature)) && ecurrent - eref > -5) acc = 1;
   }
   MPI_Bcast(&acc, 1, MPI_INT, 0, world);
 
@@ -589,6 +589,7 @@ void MinARTn::set_defaults()
   flag_sadl_press  = 0;
   min_fire         = 0;
   events_per_atom  = 0;
+  barrier_threshold = 1000000;
 
   // activation, harmonic well escape
   cluster_radius   = 5.0;
@@ -897,6 +898,8 @@ void MinARTn::read_control()
       } else if (strcmp(token1, "flag_dump_direction") == 0){
 	flag_dump_direction = force->inumeric(FLERR, token2);
 
+      } else if (strcmp(token1, "barrier_threshold") == 0){
+	barrier_threshold = force->numeric(FLERR, token2);
       //} else if (strcmp(token1, "flag_delta_direction") == 0){
 	//flag_delta_direction = force->inumeric(FLERR, token2);
 
@@ -1028,6 +1031,7 @@ void MinARTn::read_control()
     fprintf(fp1, "init_config_id      %-18d  # %s\n", min_id, "ID of the initial stable configuration");
     fprintf(fp1, "flag_push_over      %-18d  # %s\n", flag_push_over, "Flag whether to push over saddle to find another minimum");
     fprintf(fp1, "events_per_atom     %-18d  # %s\n", events_per_atom, "Find designed events per atom, set to 0 to shutoff this method");
+    fprintf(fp1, "barrier_threshold   %-18g  # %s\n", barrier_threshold, "Barrier threshold to accept new minimum");
     fprintf(fp1, "\n# activation, harmonic well escape\n");
     fprintf(fp1, "group_4_activat     %-18s  # %s\n", groupname, "The lammps group ID of the atoms that can be activated");
     fprintf(fp1, "flag_dump_direction %-18d  # %s\n", flag_dump_direction, "Use dump direction file as the initial kick direction");

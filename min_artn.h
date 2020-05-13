@@ -80,6 +80,7 @@ private:
   // global control
   int max_conv_steps;
   double temperature;      // Fictive temperature, if negative always reject the event
+  double barrier_threshold;
 
   // for art
   int nattempt, stage;
