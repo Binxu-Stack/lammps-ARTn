@@ -1858,6 +1858,10 @@ void MinARTn::random_kick()
   }
   if (flag_delta_direction){
     read_delta_direction(fdelta_direction,tmpdelpos);
+    for (int i = 0; i < nvec; ++i){
+      egvec[i] = tmpdelpos[i];
+    }
+    flag_egvec = 1;
   }
   if (fabs(cluster_radius) < ZERO){ // only the cord atom will be kicked
     for (int i = 0; i < nlocal; ++i){
