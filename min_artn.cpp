@@ -887,7 +887,7 @@ void MinARTn::read_control()
       } else if (strcmp(token1, "failed_ids") == 0){
 	if (failed_ids) memory->destroy(failed_ids);
 	memory->create(failed_ids, strlen(token2)+1, "MINARTn:failed_ids");
-	strcpy(fdump_direction, token2);
+	strcpy(failed_ids, token2);
 
       } else if (strcmp(token1, "fdelta_direction") == 0){
 	if (fdelta_direction) delete []fdelta_direction;
