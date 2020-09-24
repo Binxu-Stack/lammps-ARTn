@@ -1275,11 +1275,11 @@ int MinARTn::find_saddle( )
   egval = 0.;
   flag_egvec = 0;
 
-  // record the original atomic positions
+  // record the original atomic positions in x00 and x0
   for (int i = 0; i < nvec; ++i) x0[i] = x00[i] = xvec[i];
 
   // randomly displace the desired atoms: activation
-  random_kick();
+  random_kick(); // get the direction for searching, which stored in h
   if (dumpevent){
     int idum = update->ntimestep;
     update->ntimestep = 1000*sad_id+900;
