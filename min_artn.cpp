@@ -550,7 +550,7 @@ void MinARTn::metropolis()
     print_info(60);
 
     // temporary modification
-    if (temperature > 0. && delE < barrier_threshold && (ecurrent < eref || random->uniform() < exp((eref - ecurrent)/temperature)) && ecurrent - eref > -5) acc = 1;
+    if (temperature > 0. && (ecurrent < eref || random->uniform() < exp((eref - ecurrent)/temperature)) && ecurrent - eref > -5) acc = 1;
   }
   MPI_Bcast(&acc, 1, MPI_INT, 0, world);
 
@@ -589,7 +589,6 @@ void MinARTn::set_defaults()
   flag_sadl_press  = 0;
   min_fire         = 0;
   events_per_atom  = 0;
-  barrier_threshold = 1000000;
 
   // activation, harmonic well escape
   cluster_radius   = 5.0;
@@ -681,30 +680,30 @@ void MinARTn::read_control()
       }
 
       if (strcmp(token1, "random_seed") == 0){
-	seed = force->inumeric(FLERR, token2);
+	seed = utils::inumeric(FLERR, token2,false,lmp);
 	if (seed < 1) error->all(FLERR, "ARTn: seed must be greater than 0");
 
       } else if (strcmp(token1, "temperature") == 0){
-	temperature = force->numeric(FLERR, token2);
+	temperature = utils::numeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "max_num_events") == 0){
-	max_num_events = force->inumeric(FLERR, token2);
+	max_num_events = utils::inumeric(FLERR, token2,false,lmp);
 	if (max_num_events < 1) error->all(FLERR, "ARTn: max_num_events must be greater than 0");
 
       } else if (strcmp(token1, "max_activat_iter") == 0){
-	max_activat_iter = force->inumeric(FLERR, token2);
+	max_activat_iter = utils::inumeric(FLERR, token2,false,lmp);
 	if (max_activat_iter < 1) error->all(FLERR, "ARTn: max_activat_iter must be greater than 0");
 
       } else if (strcmp(token1, "max_trials") == 0){
-	max_trials = force->inumeric(FLERR, token2);
+	max_trials = utils::inumeric(FLERR, token2,false,lmp);
 	if (max_activat_iter < 1) error->all(FLERR, "ARTn: max_trials must be greater than 0");
 
       } else if (strcmp(token1, "increment_size") == 0){
-	increment_size = force->numeric(FLERR, token2);
+	increment_size = utils::numeric(FLERR, token2,false,lmp);
 	if (increment_size <= 0.) error->all(FLERR, "ARTn: increment_size must be greater than 0.");
 
       } else if (!strcmp(token1, "cluster_radius")){
-	cluster_radius = force->numeric(FLERR, token2);
+	cluster_radius = utils::numeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "group_4_activat") == 0){
 	if (groupname) delete [] groupname;
@@ -712,94 +711,94 @@ void MinARTn::read_control()
 	strcpy(groupname, token2);
 
       } else if (strcmp(token1, "init_step_size") == 0){
-	init_step_size = force->numeric(FLERR, token2);
+	init_step_size = utils::numeric(FLERR, token2,false,lmp);
 	if (init_step_size <= 0.) error->all(FLERR, "ARTn: init_step_size must be greater than 0.");
 
       } else if (strcmp(token1, "basin_factor") == 0){
-	basin_factor = force->numeric(FLERR, token2);
+	basin_factor = utils::numeric(FLERR, token2,false,lmp);
 	if (basin_factor <= 0.) error->all(FLERR, "ARTn: basin_factor must be greater than 0.");
 
       } else if (strcmp(token1, "max_perp_move_h") == 0){
-	max_perp_move_h = force->inumeric(FLERR, token2);
+	max_perp_move_h = utils::inumeric(FLERR, token2,false,lmp);
 	if (max_perp_move_h < 1) error->all(FLERR, "ARTn: max_perp_move_h must be greater than 0.");
 
       } else if (strcmp(token1, "min_num_ksteps") == 0){
-	min_num_ksteps = force->inumeric(FLERR, token2);
+	min_num_ksteps = utils::inumeric(FLERR, token2,false,lmp);
 	if (min_num_ksteps < 1) error->all(FLERR, "ARTn: min_num_ksteps must be greater than 0");
 
       } else if (strcmp(token1, "eigen_th_well") == 0){
-	eigen_th_well = force->numeric(FLERR, token2);
+	eigen_th_well = utils::numeric(FLERR, token2,false,lmp);
 	if (eigen_th_well > 0.) error->all(FLERR, "ARTn: eigen_th_well must be less than 0.");
 
       } else if (strcmp(token1, "max_iter_basin") == 0){
-	max_iter_basin = force->inumeric(FLERR, token2);
+	max_iter_basin = utils::inumeric(FLERR, token2,false,lmp);
 	if (max_iter_basin < 1) error->all(FLERR, "ARTn: max_iter_basin must be greater than 0");
 
       } else if (strcmp(token1, "force_th_perp_h") == 0){
-	force_th_perp_h = force->numeric(FLERR, token2);
+	force_th_perp_h = utils::numeric(FLERR, token2,false,lmp);
 	if (force_th_perp_h <= 0.) error->all(FLERR, "ARTn: force_th_perp_h must be greater than 0.");
 
       } else if (strcmp(token1, "num_lancz_vec_h") == 0){
-	num_lancz_vec_h = force->inumeric(FLERR, token2);
+	num_lancz_vec_h = utils::inumeric(FLERR, token2,false,lmp);
 	if (num_lancz_vec_h < 1) error->all(FLERR, "ARTn: num_lancz_vec_h must be greater than 0");
 
       } else if (strcmp(token1, "num_lancz_vec_c") == 0){
-	num_lancz_vec_c = force->inumeric(FLERR, token2);
+	num_lancz_vec_c = utils::inumeric(FLERR, token2,false,lmp);
 	if (num_lancz_vec_c < 1) error->all(FLERR, "ARTn: num_lancz_vec_c must be greater than 0");
 
       } else if (strcmp(token1, "del_disp_lancz") == 0){
-	del_disp_lancz = force->numeric(FLERR, token2);
+	del_disp_lancz = utils::numeric(FLERR, token2,false,lmp);
 	if (del_disp_lancz  <=  0.) error->all(FLERR, "ARTn: del_disp_lancz must be greater than 0.");
 
       } else if (strcmp(token1, "eigen_th_lancz") == 0){
-	eigen_th_lancz = force->numeric(FLERR, token2);
+	eigen_th_lancz = utils::numeric(FLERR, token2,false,lmp);
 	if (eigen_th_lancz <=  0.) error->all(FLERR, "ARTn: eigen_th_lancz must be greater than 0.");
 
       } else if (strcmp(token1, "force_th_saddle") == 0){
-	force_th_saddle = force->numeric(FLERR, token2);
+	force_th_saddle = utils::numeric(FLERR, token2,false,lmp);
 	if (force_th_saddle <=  0.) error->all(FLERR, "ARTn: force_th_saddle must be greater than 0.");
 
       } else if (strcmp(token1, "disp_sad2min_thr") == 0){
-	disp_sad2min_thr = force->numeric(FLERR, token2);
+	disp_sad2min_thr = utils::numeric(FLERR, token2,false,lmp);
 	if (disp_sad2min_thr <=  0.) error->all(FLERR, "ARTn: disp_sad2min_thr must be greater than 0.");
 
       } else if (strcmp(token1, "push_over_saddle") == 0){
-	push_over_saddle = force->numeric(FLERR, token2);
+	push_over_saddle = utils::numeric(FLERR, token2,false,lmp);
 	//if (push_over_saddle <=  0.) error->all(FLERR, "ARTn: push_over_saddle must be greater than 0.");
 
       } else if (strcmp(token1, "eigen_th_fail") == 0){
-	eigen_th_fail = force->numeric(FLERR, token2);
+	eigen_th_fail = utils::numeric(FLERR, token2,false,lmp);
 
       } else if (!strcmp(token1, "atom_disp_thr")){
-	atom_disp_thr = force->numeric(FLERR, token2);
+	atom_disp_thr = utils::numeric(FLERR, token2,false,lmp);
 	if (atom_disp_thr <= 0.) error->all(FLERR, "ARTn: atom_disp_thr must be greater than 0.");
 
       } else if (strcmp(token1, "max_perp_moves_c") == 0){
-	max_perp_moves_c = force->inumeric(FLERR, token2);
+	max_perp_moves_c = utils::inumeric(FLERR, token2,false,lmp);
 	if (max_perp_moves_c < 1) error->all(FLERR, "ARTn: max_perp_moves_c must be greater than 0.");
 
       } else if (strcmp(token1, "force_th_perp_sad") == 0){
-	force_th_perp_sad = force->numeric(FLERR, token2);
+	force_th_perp_sad = utils::numeric(FLERR, token2,false,lmp);
 	if (force_th_perp_sad <= 0.) error->all(FLERR, "ARTn: force_th_perp_sad must be greater than 0.");
 
       } else if (strcmp(token1, "use_fire") == 0){
-	use_fire = force->inumeric(FLERR, token2);
+	use_fire = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (!strcmp(token1, "flag_push_back")){
-	flag_push_back = force->inumeric(FLERR, token2);
+	flag_push_back = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (!strcmp(token1, "flag_relax_sad")){
-	flag_relax_sad = force->inumeric(FLERR, token2);
+	flag_relax_sad = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (!strcmp(token1, "max_disp_tol")){
-	max_disp_tol = force->numeric(FLERR, token2);
+	max_disp_tol = utils::numeric(FLERR, token2,false,lmp);
 
       } else if (!strcmp(token1, "max_ener_tol")){
-	max_ener_tol = force->numeric(FLERR, token2);
+	max_ener_tol = utils::numeric(FLERR, token2,false,lmp);
 	if (max_ener_tol <= 0.) error->all(FLERR, "ARTn: max_ener_tol must be greater than 0.");
 
       } else if (!strcmp(token1, "flag_press")){
-	flag_press = force->inumeric(FLERR, token2);
+	flag_press = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (!strcmp(token1, "log_file")){
 	if (flog) delete []flog;
@@ -807,10 +806,10 @@ void MinARTn::read_control()
 	strcpy(flog, token2);
 
       } else if (!strcmp(token1, "log_level")){
-	log_level = force->inumeric(FLERR, token2);
+	log_level = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (!strcmp(token1, "print_freq")){
-	print_freq = force->inumeric(FLERR, token2);
+	print_freq = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "event_list_file") == 0){
 	if (fevent) delete [] fevent;
@@ -818,7 +817,7 @@ void MinARTn::read_control()
 	strcpy(fevent, token2);
 
       } else if (strcmp(token1, "init_config_id") == 0){
-	ref_id = force->inumeric(FLERR, token2);
+	ref_id = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "dump_min_config") == 0){
 	if (fmin) delete []fmin;
@@ -836,43 +835,43 @@ void MinARTn::read_control()
 	strcpy(fproc, token2);
 
       } else if (strcmp(token1, "conv_perp_inc") == 0){
-	conv_perp_inc = force->inumeric(FLERR, token2);
+	conv_perp_inc = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "SD_steps") == 0){
-	SD_steps = force->inumeric(FLERR, token2);
+	SD_steps = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "dump_min_every") == 0){
-	dump_min_every = force->inumeric(FLERR, token2);
+	dump_min_every = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "dump_sad_every") == 0){
-	dump_sad_every = force->inumeric(FLERR, token2);
+	dump_sad_every = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "dump_event_every") == 0){
-	dump_event_every = force->inumeric(FLERR, token2);
+	dump_event_every = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "min_fire") == 0){
-	min_fire = force->inumeric(FLERR, token2);
+	min_fire = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "flag_push_over") == 0){
-	flag_push_over = force->inumeric(FLERR, token2);
+	flag_push_over = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "para_factor") == 0){
-	para_factor = force->numeric(FLERR, token2);
+	para_factor = utils::numeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "fire_lanczos_every") == 0){
-	fire_lanczos_every = force->inumeric(FLERR, token2);
+	fire_lanczos_every = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "fire_output_every") == 0){
-	fire_output_every = force->inumeric(FLERR, token2);
+	fire_output_every = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "flag_test") == 0){
-	flag_test = force->inumeric(FLERR, token2);
+	flag_test = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "events_per_atom") == 0){
-	events_per_atom = force->inumeric(FLERR, token2);
+	events_per_atom = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "flag_sadl_press") == 0){
-	flag_sadl_press = force->inumeric(FLERR, token2);
+	flag_sadl_press = utils::inumeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "sadl_press_file") == 0){
 	if (c_fsadpress) delete []c_fsadpress;
@@ -887,7 +886,7 @@ void MinARTn::read_control()
       } else if (strcmp(token1, "failed_ids") == 0){
 	if (failed_ids) memory->destroy(failed_ids);
 	memory->create(failed_ids, strlen(token2)+1, "MINARTn:failed_ids");
-	strcpy(failed_ids, token2);
+	strcpy(fdump_direction, token2);
 
       } else if (strcmp(token1, "fdelta_direction") == 0){
 	if (fdelta_direction) delete []fdelta_direction;
@@ -896,19 +895,17 @@ void MinARTn::read_control()
 	flag_delta_direction = 1;
 
       } else if (strcmp(token1, "flag_dump_direction") == 0){
-	flag_dump_direction = force->inumeric(FLERR, token2);
+	flag_dump_direction = utils::inumeric(FLERR, token2,false,lmp);
 
-      } else if (strcmp(token1, "barrier_threshold") == 0){
-	barrier_threshold = force->numeric(FLERR, token2);
       //} else if (strcmp(token1, "flag_delta_direction") == 0){
-	//flag_delta_direction = force->inumeric(FLERR, token2);
+	//flag_delta_direction = utils::inumeric(FLERR, token2,false,lmp);
 
 	// here to parase this command just for historic reason.
       } else if (strcmp(token1, "dump_direction_random_factor") == 0){
-	random_kick_factor = force->numeric(FLERR, token2);
+	random_kick_factor = utils::numeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "random_kick_factor") == 0){
-	random_kick_factor = force->numeric(FLERR, token2);
+	random_kick_factor = utils::numeric(FLERR, token2,false,lmp);
 
       } else if (strcmp(token1, "deformation_gradient") == 0){
 	flag_deformation_gradient = 1;
@@ -916,7 +913,7 @@ void MinARTn::read_control()
 	  flag_random_deformation_gradient = 1;
 	}else {
 	  for (int i =0; i < 9; ++i){
-	    deformation_gradient[i] = force->numeric(FLERR, token2);
+	    deformation_gradient[i] = utils::numeric(FLERR, token2,false,lmp);
 	    token2 = strtok(NULL," \t\n\r\f");
 	  }
 	}
@@ -1031,7 +1028,6 @@ void MinARTn::read_control()
     fprintf(fp1, "init_config_id      %-18d  # %s\n", min_id, "ID of the initial stable configuration");
     fprintf(fp1, "flag_push_over      %-18d  # %s\n", flag_push_over, "Flag whether to push over saddle to find another minimum");
     fprintf(fp1, "events_per_atom     %-18d  # %s\n", events_per_atom, "Find designed events per atom, set to 0 to shutoff this method");
-    fprintf(fp1, "barrier_threshold   %-18g  # %s\n", barrier_threshold, "Barrier threshold to accept new minimum");
     fprintf(fp1, "\n# activation, harmonic well escape\n");
     fprintf(fp1, "group_4_activat     %-18s  # %s\n", groupname, "The lammps group ID of the atoms that can be activated");
     fprintf(fp1, "flag_dump_direction %-18d  # %s\n", flag_dump_direction, "Use dump direction file as the initial kick direction");
@@ -1275,11 +1271,11 @@ int MinARTn::find_saddle( )
   egval = 0.;
   flag_egvec = 0;
 
-  // record the original atomic positions in x00 and x0
+  // record the original atomic positions
   for (int i = 0; i < nvec; ++i) x0[i] = x00[i] = xvec[i];
 
   // randomly displace the desired atoms: activation
-  random_kick(); // get the direction for searching, which stored in h
+  random_kick();
   if (dumpevent){
     int idum = update->ntimestep;
     update->ntimestep = 1000*sad_id+900;
@@ -1858,10 +1854,6 @@ void MinARTn::random_kick()
   }
   if (flag_delta_direction){
     read_delta_direction(fdelta_direction,tmpdelpos);
-    for (int i = 0; i < nvec; ++i){
-      egvec[i] = tmpdelpos[i];
-    }
-    flag_egvec = 1;
   }
   if (fabs(cluster_radius) < ZERO){ // only the cord atom will be kicked
     for (int i = 0; i < nlocal; ++i){
