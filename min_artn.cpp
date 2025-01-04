@@ -35,8 +35,10 @@ using namespace LAMMPS_NS;
  * lapack or MKL-lapack is used to evaluate the lowest eigenvalue of the matrix in Lanczos.
 ------------------------------------------------------------------------------------------------- */
 #ifdef MKL
-#include "mkl.h"
-#define dstev_  dstev
+extern "C" {
+  #include "mkl_lapacke.h"
+}
+#define dstev_  LAPACKE_dstev_work
 #else
 extern "C" {
 extern void dstev_(char *, int*, double *, double *, double *, int *, double *, int *);
@@ -2192,7 +2194,7 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
   double eigen1 = 0., eigen2 = 0.;
   char jobs = 'V';
   double *work, *z;
-  int ldz = maxvec, info;
+  lapack_int ldz = maxvec;
   z = new double [ldz*maxvec];
   work = new double [2*maxvec];
 
@@ -2201,7 +2203,7 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
     x0tmp[i] = xvec[i];
     f0[i] = fvec[i];
   }
-  int n;
+  lapack_int n;
   for (n = 1; n <= maxvec; ++n){
     for (int i = 0; i < nvec; ++i){
       q_k[i] = r_k_1[i] / beta_k_1;
@@ -2250,14 +2252,7 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
       e_bak[i] = e[i];
     }
     if (n >= 2){
-      dstev_(&jobs, &n, d_bak, e_bak, z, &ldz, work, &info);
-
-      if (info != 0){
-	char str[MAXLINE];
-        sprintf(str, "ARTn: dstev_ error in Lanczos subroute. Error Info = %i. \n(Info < 0: the i-th argument had an illegal value; Info > 0: i off-diagonal elements did not converged to zero.", info);
-       	error->all(FLERR,str);
-      }
-
+      dstev_(LAPACK_COL_MAJOR,'V', n, d_bak, e_bak, z, ldz, work);
       eigen1 = eigen2; eigen2 = d_bak[0];
     }
     if (n >= 3 && fabs((eigen2-eigen1)/eigen1) < eigen_th_lancz) {
