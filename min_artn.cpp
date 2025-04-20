@@ -1987,14 +1987,27 @@ void MinARTn::random_kick()
   }
   MPI_Allreduce(&norm,&normall,1,MPI_DOUBLE,MPI_SUM,world);
   MPI_Allreduce(&norm2,&normall2,1,MPI_DOUBLE,MPI_SUM,world);
+  if (normall < ZERO) {
+    if (me == 0) error->one(FLERR,"Zero norm in random_kick");
+  }
+  bool flag_zero_norm_tmpdelpos = false;
+  double norm2_i = 1.0;
+  if (normall2 < ZERO) {
+    flag_zero_norm_tmpdelpos = true;
+  } else {
+    norm2_i = 1./sqrt(normall2);
+  }
   double norm_i = 1./sqrt(normall);
-  double norm2_i = 1./sqrt(normall2);
   for (int i = 0; i < nvec; ++i){
     delpos[i] = delpos[i] * norm_i;
-    tmpdelpos[i] = tmpdelpos[i] * norm2_i;
+    if (flag_zero_norm_tmpdelpos) {
+      tmpdelpos[i] = 0.0;
+    } else {
+      tmpdelpos[i] = tmpdelpos[i] * norm2_i;
+    }
   }
 
-  if (flag_dump_direction || flag_deformation_gradient || flag_delta_direction){
+  if (!flag_zero_norm_tmpdelpos && (flag_dump_direction || flag_deformation_gradient || flag_delta_direction)){
     for (int i = 0; i < 3*nlocal; ++i){
       delpos[i] = delpos[i] * random_kick_factor + ( 1 - random_kick_factor) * tmpdelpos[i];
     }
@@ -3241,6 +3254,7 @@ void MinARTn::read_delta_direction(char *file, double *delpos){
   char str[MAXLINE], oneline[MAXLINE], *token;
   double * filepos;
   memory->create(filepos, dimension*natoms, "MINARTN: delta_pos");
+  for (int i = 0; i < dimension*natoms; ++i) filepos[i] = 0.0;
   if (me == 0){
     fp = fopen(file, "r");
     if (fp == NULL){
@@ -3251,8 +3265,11 @@ void MinARTn::read_delta_direction(char *file, double *delpos){
       fgets(oneline,MAXLINE,fp);
       if (feof(fp)) break;
       sscanf(oneline,"%lg", &tmp);
-      filepos[index] = tmp;
-      ++index;
+      if (index < dimension*natoms) {filepos[index] = tmp; ++index;}
+      else {
+        sprintf(str, "Delta direction file %s has more than %d atoms", file, natoms);
+        error->one(FLERR,str);
+      }
     }
     fclose(fp);
   }
@@ -3316,6 +3333,7 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
   MPI_Bcast(&natoms, 1, MPI_INT,0,world);
   // 3N + 1 to set id to position x[id*3], e.g. id = 1 are stored in dumppos[1*3]
   dumppos = new double [3*natoms+3];
+  for (int i = 0; i < 3*natoms+3; ++i) dumppos[i] = 0.0;
   if (me == 0){
     fgets(oneline,MAXLINE,fp);
     if(oneline[strlen("ITEM: BOX BOUNDS p")] == 'p'){
