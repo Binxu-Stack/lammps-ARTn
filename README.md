@@ -1,6 +1,60 @@
 # LAMMPS ARTn 
 The LAMMPS implication of Activation Relaxation Technique nouveau.
 
+## What it includes
+
+This package includes a LAMMPS implementation of the Activation Relaxation Technique nouveau (ARTn) for finding saddle points and transition pathways in atomic systems. It consists of:
+- Two source files (`min_artn.cpp` and `min_artn.h`) that implement ARTn as a new minimization style in LAMMPS
+- Example cases demonstrating applications to different material systems (Cu surface diffusion, Cu-Zr metallic glasses, 2D systems)
+- Control parameter files and input scripts for running ARTn simulations
+
+
+## Why this package
+
+ARTn is a powerful open-ended saddle point search method that can systematically explore the potential energy landscape of materials without requiring prior knowledge of final states. This LAMMPS implementation provides several advantages:
+- **Efficient saddle point searching**: Finds transition states and energy barriers for thermally activated processes
+- **Scalable**: Leverages LAMMPS's parallel computing capabilities for large-scale atomistic simulations
+- **Versatile**: Applicable to various material systems including surfaces, bulk materials, metallic glasses, and 2D systems
+- **Automated event discovery**: Can systematically sample multiple transition pathways from a given configuration
+- **Integration with LAMMPS**: Seamlessly works with LAMMPS's extensive potential library and existing analysis tools
+
+## About ARTn
+
+The **Activation-Relaxation Technique nouveau (ARTn)** is an open-ended saddle point search method originally developed by Mousseau et al. for exploring the potential energy surface (PES) of complex systems (see https://normandmousseau.com/en/research/art-nouveau for more details). Unlike traditional transition state search methods that require knowledge of both initial and final states, ARTn only requires the initial configuration to systematically discover transition pathways and energy barriers. 
+
+We developed this package to make the entire ARTn process parallel and benefit from the utilities provided by LAMMPS C++ modules, which facilitates the implementation of additional features.
+
+### Core ARTn Algorithm
+
+The standard ARTn method works through the following stages:
+
+1. **Initial Activation**: Random displacement is applied to selected atoms to push the system out of its local minimum
+2. **Basin Escape**: The system moves away from the initial basin using the lowest curvature direction computed via the Lanczos algorithm
+3. **Saddle Point Convergence**: Once the eigenvalue becomes negative, the system converges to the nearest saddle point by minimizing forces perpendicular to the unstable mode
+4. **Relaxation**: After crossing the saddle point, the system relaxes to a new local minimum
+
+### This Implementation
+
+This LAMMPS implementation follows the standard ARTn procedure while providing several extended features:
+
+**Standard ARTn Features:**
+- Lanczos algorithm for efficient computation of the lowest eigenvalue and eigenvector
+- Configurable activation strategies (single atom, cluster, or all atoms)
+- Force-based convergence criteria for saddle points
+- Automated push-over to find connected minima
+
+**Extended Features:**
+- **Events-per-atom mode**: Systematically search for multiple events on each atom in the group
+- **Custom initial directions**: Define initial kick directions from dump files, delta direction files, or deformation gradients (useful for studying specific mechanisms)
+- **Validation mechanisms**: Push-back verification to confirm saddle points connect to the initial minimum
+- **Pressure monitoring**: Track stress tensor components at saddle points and final minima (valuable for studying pressure-dependent processes)
+- **Metropolis sampling**: Optional acceptance/rejection of new minima based on energy barriers and temperature
+- **FIRE algorithm integration**: Alternative minimization method for improved efficiency in certain systems
+- **Comprehensive output**: Detailed logging of eigenvalues, forces, displacements, and atomic configurations at each stage
+
+These extensions make this implementation particularly suitable for studying complex materials phenomena such as defect migration in crystals, structural relaxations in amorphous materials, and surface diffusion processes under varying conditions.
+
+
 
 ## Compiling
 1. Put two files (min_artn.cpp min_artn.h) in the src directory.
@@ -111,13 +165,21 @@ Extended parameters (Customized ARTn process):
   * flag_dump_direction: = 1, Define the initial kick direction from a dump file (name of this file is defined by
     fdump_direction).
 
-## Contributor
+## Contributors
 
-Bin Xu, xubinrun@gmail.com
+Bin Xu, xubinrun@gmail.com, xubin@nimte.ac.cn
 
 Lingti Kong, konglt@sjtu.edu.cn
 
 ## Reference
+
+If you find this package useful, please cite our paper and the original ARTn method papers.
+
+**This Implementation:**
+
+1. B. Xu, et al., Phys., Rev. Lett., 120, 125503
+
+**ARTn Method Papers:**
 
 1. G. T. Barkema, et al., Phys. Rev. Lett. 77, 4358 (1996).
 2. R. Malek, et al., Phys. Rev. E 62, 7723-7728 (2000).
