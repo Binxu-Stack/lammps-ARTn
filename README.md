@@ -64,17 +64,17 @@ Intel Math Kernel Library (MKL) package.
 
 ### Compile
 
-Command for make:
+Command for make: (Makefile example lammps/src/MAKE/OPTIONS/Makefle.oneapi)
 
 ```bash
 cd ${software}/ARTn
 cp -r src/USER-ARTn ${software}/lammps/src
 cd ${software}/lammps/src
 make yes-USER-ARTn
-make machine
+make machine # need MKL
 ```
 
-Command for cmake:
+Command for cmake: 
 ```bash
 cd ${software}/ARTn
 cp -r src/USER-ARTn ${software}/lammps/src
@@ -85,6 +85,7 @@ sed -i '/foreach(PKG_WITH_INCL / s/)/ USER-ARTn)/' CMakeLists.txt
 sed -i '/set(STANDARD_PACKAGES/,/)/ s/)/  \n  USER-ARTn)/' CMakeLists.txt
 
 cd ..; mkdir build; cd build
+# module load mkl mpi, one may need those environment
 cmake -D PKG_USER-ARTn=on -C ../cmake/presets/basic.cmake ../cmake
 cmake --build .
 make install
