@@ -210,5 +210,14 @@ If you find this package useful, please cite our paper and the original ARTn met
 2. R. Malek, et al., Phys. Rev. E 62, 7723-7728 (2000).
 3. E. Cances, et al., J. Chem. Phys. 130, 114711 (2009).
 4. N. Mousseau, et al., J. At., Mol., Opt. Phys. 2012, 1 (2012).
-    
+
+## License
+
+This software is distributed under the GNU General Public License v2.0 (GPL-2.0).
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License along with this program; if not, write to the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
