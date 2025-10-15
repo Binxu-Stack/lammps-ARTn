@@ -2,3 +2,11 @@ ARTn.tgz
 .vscode/c_cpp_properties.json
 example/1-Cu-100/test/
 **/test
+log.event
+log.lammps
+log.artn
+sadl_press.dat
+failed_ids.dat
+min.lammpstrj
+sad.lammpstrj
+eve.lammpstrj

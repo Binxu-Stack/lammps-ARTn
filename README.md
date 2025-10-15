@@ -85,28 +85,17 @@ sed -i '/foreach(PKG_WITH_INCL / s/)/ USER-ARTn)/' CMakeLists.txt
 sed -i '/set(STANDARD_PACKAGES/,/)/ s/)/  \n  USER-ARTn)/' CMakeLists.txt
 
 cd ..; mkdir build; cd build
-cmake -D PKG_USER-ARTn=on ../cmake
+cmake -D PKG_USER-ARTn=on -C ../cmake/presets/basic.cmake ../cmake
 cmake --build .
 make install
 ```
 
-1. Put two files (min_artn.cpp min_artn.h) in the src directory.
-2. Modify your Makefile.{machine} in LAMMPS to make sure that the MKL lib and include files can be linked. E.g. add the
-   following lines in Makefile.{machine}
-```
-    PKG_INC = /opt/intel/compiler/composer_xe_2013_sp1.0.080/mkl/include
-    PKG_HOM = /opt/intel/compiler/composer_xe_2013_sp1.0.080/mkl/lib/intel64
-    PKG_LIB = -Wl,--start-group ${PKG_HOM}/libmkl_core.a ${PKG_HOM}/libmkl_sequential.a \
-    ${PKG_HOM}/libmkl_intel_lp64.a -Wl,--end-group \
-    /opt/intel/compiler/composer_xe_2013_sp1.0.080/compiler/lib/intel64/libiomp5.a \
-    -lm -lpthread
-```
-
-3. Compile your LAMMPS codes.
 
 ## Benchmark 
+
 After Compiling, you can run  prepared tests on  *./example* directory. One is Cu(110) surface diffusion events
-searching,  and the other one is  thermally activated events searching  in Cu$_{64}$Zr$_{36}$ metallic glasses.
+searching,  and the second one is  thermally activated events searching  in Cu$_{64}$Zr$_{36}$ metallic glasses.
+Third one is for testing new feature. You don't need it.
 
 To launch a ARTn searching, two files are often needed.
 
