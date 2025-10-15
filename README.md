@@ -56,7 +56,40 @@ These extensions make this implementation particularly suitable for studying com
 
 
 
-## Compiling
+## Installation
+
+### Prerequest
+
+MKL package.
+
+### Compile
+
+Command for make:
+
+```bash
+cd ${software}/ARTn
+cp -r src/USER-ARTn ${software}/lammps/src
+cd ${software}/lammps/src
+make yes-USER-ARTn
+make machine
+```
+
+command for cmake:
+```bash
+cd ${software}/ARTn
+cp -r src/USER-ARTn ${software}/lammps/src
+cp src/USER-ARTn.cmake ${software}/lammps/cmake/Modules/Packages/
+
+cd ${software}/lammps/cmake
+sed -i '/foreach(PKG_WITH_INCL / s/)/ USER-ARTn)/' CMakeLists.txt
+sed -i '/set(STANDARD_PACKAGES/,/)/ s/)/  \n  USER-ARTn)/' CMakeLists.txt
+
+cd ..; mkdir build; cd build
+cmake -D PKG_USER-ARTn=on ../cmake
+cmake --build .
+make install
+```
+
 1. Put two files (min_artn.cpp min_artn.h) in the src directory.
 2. Modify your Makefile.{machine} in LAMMPS to make sure that the MKL lib and include files can be linked. E.g. add the
    following lines in Makefile.{machine}

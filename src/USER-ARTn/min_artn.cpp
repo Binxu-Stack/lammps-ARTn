@@ -34,16 +34,16 @@ using namespace LAMMPS_NS;
 /* -------------------------------------------------------------------------------------------------
  * lapack or MKL-lapack is used to evaluate the lowest eigenvalue of the matrix in Lanczos.
 ------------------------------------------------------------------------------------------------- */
-#ifdef MKL
+//#ifdef MKL
 extern "C" {
   #include "mkl_lapacke.h"
 }
 #define dstev_  LAPACKE_dstev_work
-#else
-extern "C" {
-extern void dstev_(char *, int*, double *, double *, double *, int *, double *, int *);
-};
-#endif
+//#else
+//extern "C" {
+//extern void dstev_(char *, int*, double *, double *, double *, int *, double *, int *);
+//};
+//#endif
 
 #define EPS_ENERGY 1.e-8
 
@@ -1778,7 +1778,7 @@ void MinARTn::reset_coords()
     dx = dx0 = x[i][0] - x0tmp[n];
     dy = dy0 = x[i][1] - x0tmp[n+1];
     dz = dz0 = x[i][2] - x0tmp[n+2];
-    domain->minimum_image(dx,dy,dz);
+    domain->minimum_image(FLERR,dx,dy,dz);
 
     if (dx != dx0) x0tmp[n]   = x[i][0] - dx;
     if (dy != dy0) x0tmp[n+1] = x[i][1] - dy;
@@ -1810,7 +1810,7 @@ void MinARTn::reset_x00()
     dx = dx0 = x[i][0] - x00[n];
     dy = dy0 = x[i][1] - x00[n+1];
     dz = dz0 = x[i][2] - x00[n+2];
-    domain->minimum_image(dx,dy,dz);
+    domain->minimum_image(FLERR,dx,dy,dz);
 
     if (dx != dx0) x00[n]   = x[i][0] - dx;
     if (dy != dy0) x00[n+1] = x[i][1] - dy;
@@ -1958,7 +1958,7 @@ void MinARTn::random_kick()
       double dx = atom->x[i][0] - cord[0];
       double dy = atom->x[i][1] - cord[1];
       double dz = atom->x[i][2] - cord[2];
-      domain->minimum_image(dx, dy, dz);
+      domain->minimum_image(FLERR,dx, dy, dz);
       double r2 = dx*dx + dy*dy + dz*dz;
       if (r2 <= rcut2){
         if (flag_deformation_gradient){
@@ -2309,7 +2309,7 @@ int MinARTn::lanczos(bool egvec_exist, int flag, int maxvec){
       flag_egvec = 1;
       for (int i = 0; i < nvec; ++i) egvec[i] = 0.;
       for (int i = 0; i < nvec; ++i)
-	for (int j = 0; j < n-1; ++j) egvec[i] += z[j] * lanc[j][i];
+	      for (int j = 0; j < n-1; ++j) egvec[i] += z[j] * lanc[j][i];
 
       if (domain->dimension == 2) {
 	for ( int i = 0; i < atom->nlocal; ++i)
@@ -3396,7 +3396,7 @@ void MinARTn::read_dump_direction(char * file, double * delpos){
       dx = dumppos[i*3] - xvec[n];
       dy = dumppos[i*3+1] - xvec[n+1];
       dz = dumppos[i*3+2] - xvec[n+2];
-      domain->minimum_image(dx, dy, dz);
+      domain->minimum_image(FLERR,dx, dy, dz);
       delpos[n] = dx;
       delpos[n+1] = dy;
       delpos[n+2] = dz;

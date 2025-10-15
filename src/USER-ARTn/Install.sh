@@ -1,13 +1,19 @@
 # Install/unInstall package classes in LAMMPS
 
-if (test $1 = 1) then
+# Install/unInstall package files in LAMMPS
+# mode = 0/1/2 for uninstall/install/update
 
-  cp -p min_artn.h ..
-  cp -p min_artn.cpp ..
+mode=$1
 
-elif (test $1 = 0) then
+action () {
+  if (test $mode = 0) then
+    rm -f ../$1
+  fi
+}
 
-  rm ../min_artn.h
-  rm ../min_artn.cpp
+# all package files with no dependencies
 
-fi
+for file in *.cpp *.h; do
+  test -f ${file} && action $file
+done
+

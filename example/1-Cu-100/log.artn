@@ -75,191 +75,257 @@ Minimizing the initial configuration, id = 0 ....
   - Current (ref) energy (eV) : -6212.089082
   - Temperature   (eV)        : -0.004000
   - Force two-norm final      : 0.000058
-  - Pressure tensor           : -7199.15 -7199.15 -0.0390791 -1.6242e-12 -2.54126e-13 -4.55355e-12
+  - Pressure tensor           : -7199.15 -7199.15 -0.0390791 5.26759e-12 -1.51702e-11 -2.34238e-12
 
 Attempt 1, new activation centered on atom 1793 with total 5 atoms. 0 success till now.
   Stage 1, search for the saddle from configuration 0
   ----------------------------------------------------------------------------------------------------
     Steps  E-Eref m_perp trial nlanc ftot       fpar        fperp     eigen       delr   evalf
   ----------------------------------------------------------------------------------------------------
-       0    0.01837   3   3     0    0.44825   -0.41866    0.16015    0.00000    0.10549 8
-       5    1.09497   6   6     9    1.87137   -1.78496    0.56209   -0.85549    1.44219 79
-       7    1.29664   6   6     5    1.39922   -1.14307    0.80697   -1.04455    2.05048 107
+       0    0.01468   3   3     0    0.38207   -0.34494    0.16429    0.00000    0.10568 8
+       5    0.92270   6   6    25    1.50848   -1.48156    0.28370    0.00298    1.32632 95
+      10    1.78199   6   6     4    0.84244   -0.70780    0.45687   -0.73092    2.57314 163
+      12    1.75514   6   6    25    0.62376   -0.28066    0.55705  -11.24019    3.09035 213
   ----------------------------------------------------------------------------------------------------
-  Stage 1 succeeded after 7 iterations, continue searching based on eigen-vector.
+  Stage 1 succeeded after 12 iterations, continue searching based on eigen-vector.
   Stage 2, converge to the saddle by using Lanczos
   ----------------------------------------------------------------------------------------------------
     Iter   E-Eref m_perp trial nlanc ftot      fpar        fperp     eigen     delr    h.h' evalf
   ----------------------------------------------------------------------------------------------------
-       0    0.84291  11  11     3    0.51252   -0.07485    0.50703  -1.0495   1.8982  0.572 122
-       3    0.70181  14  14     3    0.07184   -0.00153    0.07182  -0.7618   1.9216  1.000 209
+       0    1.63202  11  11    15    0.40099   -0.22300    0.33326  -9.2060   3.1126  0.005 240
+       4    1.45790  15  15     3    0.08906    0.00224    0.08903  -0.6248   3.4510  0.999 341
   ----------------------------------------------------------------------------------------------------
-  Stage 2 converged at a new saddle after 3 iterations, dE = 0.701811
-    The distance between new found saddle and min-0 is 1.91758, > -1, acceptable.
+  Stage 2 converged at a new saddle after 4 iterations, dE = 1.4579
+    The distance between new found saddle and min-0 is 3.44688, > -1, acceptable.
   Stage 3, push back the saddle to confirm if it is linked with min-0
-    - Current   energy (eV)     : -6212.089082
+    - Current   energy (eV)     : -6212.089080
     - Reference energy (eV)     : -6212.089082
-    - Force two-norm final      : 0.000088
+    - Force two-norm final      : 0.000099
     - Minimizer stop condition  : force tolerance
-    - # of force evaluations    : 150
-  Stage 3 succeeded, dr = 0.000128525, drmax_atom = 8.79525e-06, tolerance = 0.5, accept the new saddle.
-  Stage 4, push over the new saddle, Enew: -6211.46; Eref= -6212.09. Relaxing...
-    Relaxed to a nearby minimum to sad-1
-    - Current  min  energy (eV) : -6212.089066
-    - Force two-norm final      : 0.000088
-      - Reference     energy (eV) : -6212.089082
-      - Minimizer stop condition  : force tolerance
-      - Distance to min-00000000  : 3.312
-  Stage 4 done, the new min (E= -6212.09) of ID 1 is rejected by Metropolis.
+    - # of force evaluations    : 151
+  Stage 3 failed, dr = 2.56123, drmax_atom = 2.55479, tolerance = 0.5, reject the new saddle.
 
-Attempt 2, new activation centered on atom 1793 with total 5 atoms. 1 success till now.
+Attempt 2, new activation centered on atom 1793 with total 5 atoms. 0 success till now.
   Stage 1, search for the saddle from configuration 0
   ----------------------------------------------------------------------------------------------------
     Steps  E-Eref m_perp trial nlanc ftot       fpar        fperp     eigen       delr   evalf
   ----------------------------------------------------------------------------------------------------
-       0    0.01869   3   3     0    0.47038   -0.43511    0.17873    0.00000    0.10574 539
-       5    1.29671   6   6     7    2.38902   -2.32199    0.56195   -0.83211    1.44877 608
-       6    1.54184   6   6     5    2.21256   -2.08301    0.74599   -1.11856    1.75852 621
+       0    0.01758   3   3     0    0.45988   -0.41870    0.19020    0.00000    0.10681 500
+       5    1.10081   6   6     7    1.91991   -1.85959    0.47748   -0.81927    1.42002 569
+       6    1.30871   6   6     6    1.79443   -1.66687    0.66448   -5.22922    1.71497 583
   ----------------------------------------------------------------------------------------------------
   Stage 1 succeeded after 6 iterations, continue searching based on eigen-vector.
   Stage 2, converge to the saddle by using Lanczos
   ----------------------------------------------------------------------------------------------------
     Iter   E-Eref m_perp trial nlanc ftot      fpar        fperp     eigen     delr    h.h' evalf
   ----------------------------------------------------------------------------------------------------
-       0    0.73191  11  11     3    0.70851   -0.36123    0.60951  -1.1240   1.4581  0.461 636
-       3    0.51800  14  14     3    0.09733    0.00967    0.09685  -1.2675   1.3996  0.998 703
+       0    0.67576  11  11    15    0.68803    0.37111    0.57936  -6.3420   1.4109 -0.330 610
+       3    0.51276  14  14     3    0.06702    0.00094    0.06701  -1.2668   1.3797  0.945 688
   ----------------------------------------------------------------------------------------------------
-  Stage 2 converged at a new saddle after 3 iterations, dE = 0.518
-    The distance between new found saddle and min-0 is 1.39242, > -1, acceptable.
+  Stage 2 converged at a new saddle after 3 iterations, dE = 0.512762
+    The distance between new found saddle and min-0 is 1.37186, > -1, acceptable.
   Stage 3, push back the saddle to confirm if it is linked with min-0
-    - Current   energy (eV)     : -6212.089078
+    - Current   energy (eV)     : -6212.089066
     - Reference energy (eV)     : -6212.089082
-    - Force two-norm final      : 0.000098
+    - Force two-norm final      : 0.000094
     - Minimizer stop condition  : force tolerance
     - # of force evaluations    : 146
-  Stage 3 succeeded, dr = 0.00136279, drmax_atom = 0.000122284, tolerance = 0.5, accept the new saddle.
+  Stage 3 succeeded, dr = 0.00256864, drmax_atom = 0.000241663, tolerance = 0.5, accept the new saddle.
   Stage 4, push over the new saddle, Enew: -6211.71; Eref= -6212.09. Relaxing...
-    Relaxed to a nearby minimum to sad-2
-    - Current  min  energy (eV) : -6212.089076
-    - Force two-norm final      : 0.000090
+    Relaxed to a nearby minimum to sad-1
+    - Current  min  energy (eV) : -6212.089065
+    - Force two-norm final      : 0.000087
       - Reference     energy (eV) : -6212.089082
       - Minimizer stop condition  : force tolerance
       - Distance to min-00000000  : 2.56123
-  Stage 4 done, the new min (E= -6212.09) of ID 2 is rejected by Metropolis.
+  Stage 4 done, the new min (E= -6212.09) of ID 1 is rejected by Metropolis.
 
-Attempt 3, new activation centered on atom 1793 with total 5 atoms. 2 success till now.
+Attempt 3, new activation centered on atom 1793 with total 5 atoms. 1 success till now.
   Stage 1, search for the saddle from configuration 0
   ----------------------------------------------------------------------------------------------------
     Steps  E-Eref m_perp trial nlanc ftot       fpar        fperp     eigen       delr   evalf
   ----------------------------------------------------------------------------------------------------
-       0    0.01284   3   3     0    0.33865   -0.30216    0.15294    0.00000    0.10524 1017
-       5    0.91196   6   6    22    1.69261   -1.65252    0.36624   -0.35628    1.29600 1101
-       7    1.31039   6   6     6    1.65797   -1.48456    0.73821   -1.13364    1.83747 1128
+       0    0.01849   3   3     0    0.44573   -0.41530    0.16189    0.00000    0.10504 1004
+       5    1.32407   6   6    21    2.28818   -2.25757    0.37299   -0.49187    1.30235 1087
+       6    1.68835   6   6    12    2.26939   -2.22703    0.43642  -11.65345    1.55165 1107
   ----------------------------------------------------------------------------------------------------
-  Stage 1 succeeded after 7 iterations, continue searching based on eigen-vector.
+  Stage 1 succeeded after 6 iterations, continue searching based on eigen-vector.
   Stage 2, converge to the saddle by using Lanczos
   ----------------------------------------------------------------------------------------------------
     Iter   E-Eref m_perp trial nlanc ftot      fpar        fperp     eigen     delr    h.h' evalf
   ----------------------------------------------------------------------------------------------------
-       0    0.65824  11  11     3    0.55370   -0.01626    0.55347  -1.1360   1.5591  0.463 1143
-       3    0.50860  14  14     3    0.05108    0.00020    0.05108  -1.3154   1.3641  1.000 1210
+       0    0.41087  11  11     6    1.05725   -0.75317    0.74197  -5.1763   0.9715  0.286 1125
+       2    0.03330  13  13    15    0.17049   -0.02566    0.16854   0.1173   0.4974 -0.017 1216
   ----------------------------------------------------------------------------------------------------
-  Stage 2 converged at a new saddle after 3 iterations, dE = 0.5086
-    The distance between new found saddle and min-0 is 1.36138, > -1, acceptable.
-  Stage 3, push back the saddle to confirm if it is linked with min-0
-    - Current   energy (eV)     : -6212.089082
-    - Reference energy (eV)     : -6212.089082
-    - Force two-norm final      : 0.000082
-    - Minimizer stop condition  : force tolerance
-    - # of force evaluations    : 144
-  Stage 3 succeeded, dr = 0.000146179, drmax_atom = 1.10861e-05, tolerance = 0.5, accept the new saddle.
-  Stage 4, push over the new saddle, Enew: -6211.72; Eref= -6212.09. Relaxing...
-    Relaxed to a nearby minimum to sad-3
-    - Current  min  energy (eV) : -6212.089081
-    - Force two-norm final      : 0.000094
-      - Reference     energy (eV) : -6212.089082
-      - Minimizer stop condition  : force tolerance
-      - Distance to min-00000000  : 2.56123
-  Stage 4 done, the new min (E= -6212.09) of ID 3 is rejected by Metropolis.
+  Stage 2 failed, the smallest eigen value is 0.117291 > 0.0001 or delE = 0.0332996 < -1.0
 
-Attempt 4, new activation centered on atom 1793 with total 5 atoms. 3 success till now.
+Attempt 4, new activation centered on atom 1793 with total 5 atoms. 1 success till now.
   Stage 1, search for the saddle from configuration 0
   ----------------------------------------------------------------------------------------------------
     Steps  E-Eref m_perp trial nlanc ftot       fpar        fperp     eigen       delr   evalf
   ----------------------------------------------------------------------------------------------------
-       0    0.01915   3   3     0    0.45408   -0.42599    0.15724    0.00000    0.10490 1520
-       5    1.31487   6   6    14    2.11195   -2.07832    0.37535   -0.26985    1.29054 1596
-       8    2.09380   6   6    11    1.69695   -1.57366    0.63501  -10.72465    2.08260 1644
+       0    0.01421   3   3     0    0.37029   -0.33366    0.16058    0.00000    0.10543 1220
+       5    1.02256   6   6    25    1.93316   -1.90184    0.34654    0.00487    1.33169 1307
+       8    1.90218   6   6     5    1.89924   -1.81428    0.56168   -1.03215    2.12844 1358
   ----------------------------------------------------------------------------------------------------
   Stage 1 succeeded after 8 iterations, continue searching based on eigen-vector.
   Stage 2, converge to the saddle by using Lanczos
   ----------------------------------------------------------------------------------------------------
     Iter   E-Eref m_perp trial nlanc ftot      fpar        fperp     eigen     delr    h.h' evalf
   ----------------------------------------------------------------------------------------------------
-       0    1.46779  11  11     6    1.12542   -0.75592    0.83376  -4.6997   1.6811  0.346 1662
-       5    1.73265  16  16     4    0.30840   -0.27210    0.14516  -0.7808   2.2803  0.993 1792
-       9    1.71155  20  24     3    0.09130    0.01267    0.09042  -0.8361   2.6358  0.989 1928
+       0    0.92136  11  11     3    0.93620    0.29898    0.88718  -1.0370   1.7051 -0.422 1373
+       3    0.51783  14  14     3    0.09124   -0.00282    0.09120  -1.3076   1.4236  0.999 1440
   ----------------------------------------------------------------------------------------------------
-  Stage 2 converged at a new saddle after 9 iterations, dE = 1.71155
-    The distance between new found saddle and min-0 is 2.63495, > -1, acceptable.
+  Stage 2 converged at a new saddle after 3 iterations, dE = 0.517825
+    The distance between new found saddle and min-0 is 1.41186, > -1, acceptable.
   Stage 3, push back the saddle to confirm if it is linked with min-0
     - Current   energy (eV)     : -6212.089082
     - Reference energy (eV)     : -6212.089082
-    - Force two-norm final      : 0.000086
+    - Force two-norm final      : 0.000085
     - Minimizer stop condition  : force tolerance
-    - # of force evaluations    : 157
-  Stage 3 succeeded, dr = 0.000198617, drmax_atom = 1.15364e-05, tolerance = 0.5, accept the new saddle.
-  Stage 4, push over the new saddle, Enew: -6210.44; Eref= -6212.09. Relaxing...
-    Relaxed to a nearby minimum to sad-4
+    - # of force evaluations    : 152
+  Stage 3 succeeded, dr = 0.000582975, drmax_atom = 5.27296e-05, tolerance = 0.5, accept the new saddle.
+  Stage 4, push over the new saddle, Enew: -6211.71; Eref= -6212.09. Relaxing...
+    Relaxed to a nearby minimum to sad-2
     - Current  min  energy (eV) : -6212.089080
-    - Force two-norm final      : 0.000090
+    - Force two-norm final      : 0.000094
       - Reference     energy (eV) : -6212.089082
       - Minimizer stop condition  : force tolerance
-      - Distance to min-00000000  : 4.21328
-  Stage 4 done, the new min (E= -6212.09) of ID 4 is rejected by Metropolis.
+      - Distance to min-00000000  : 2.56123
+  Stage 4 done, the new min (E= -6212.09) of ID 2 is rejected by Metropolis.
 
-Attempt 5, new activation centered on atom 1793 with total 5 atoms. 4 success till now.
+Attempt 5, new activation centered on atom 1793 with total 5 atoms. 2 success till now.
   Stage 1, search for the saddle from configuration 0
   ----------------------------------------------------------------------------------------------------
     Steps  E-Eref m_perp trial nlanc ftot       fpar        fperp     eigen       delr   evalf
   ----------------------------------------------------------------------------------------------------
-       0    0.01324   3   3     0    0.36595   -0.32395    0.17022    0.00000    0.10604 2281
-       5    0.95970   6   6    25    2.06569   -2.02820    0.39175    0.00163    1.40486 2368
-       9    2.40269   6   6    12    2.63328   -2.57489    0.55142   -2.04734    2.57110 2472
+       0    0.01310   3   3     0    0.36687   -0.32270    0.17451    0.00000    0.10769 1760
+       5    0.80405   6   6    25    1.42459   -1.39239    0.30117    0.01138    1.31225 1847
+      10    1.66189   6   6     9    1.60896   -1.42471    0.74764   -0.91474    2.63393 1945
+      11    1.77183   6   6     4    1.75295   -1.59983    0.71650   -1.18599    2.90983 1957
   ----------------------------------------------------------------------------------------------------
-  Stage 1 succeeded after 9 iterations, continue searching based on eigen-vector.
+  Stage 1 succeeded after 11 iterations, continue searching based on eigen-vector.
   Stage 2, converge to the saddle by using Lanczos
   ----------------------------------------------------------------------------------------------------
     Iter   E-Eref m_perp trial nlanc ftot      fpar        fperp     eigen     delr    h.h' evalf
   ----------------------------------------------------------------------------------------------------
-       0    1.10581  11  11     3    1.04628   -0.55616    0.88623  -3.1571   1.9712  0.172 2487
-       5    0.58303  16  16     3    0.68817    0.09499    0.68159  -1.5165   1.5779  0.979 2656
-       7    0.51101  16  16     3    0.04860    0.00183    0.04857  -1.3636   1.3993  0.999 2711
+       0    1.03373  11  11     3    0.96230    0.60994    0.74430  -1.1912   2.6419 -0.238 1972
+       5    1.04174   9   9     6    0.16070    0.15365    0.04709  -0.1960   2.9606  0.986 2090
+       8    1.09633   9   9     9    0.12380    0.11417    0.04788   0.0841   3.2577  0.980 2171
   ----------------------------------------------------------------------------------------------------
-  Stage 2 converged at a new saddle after 7 iterations, dE = 0.511006
-    The distance between new found saddle and min-0 is 1.3765, > -1, acceptable.
+  Stage 2 failed, the smallest eigen value is 0.0840956 > 0.0001 or delE = 1.09633 < -1.0
+
+Attempt 6, new activation centered on atom 1793 with total 5 atoms. 2 success till now.
+  Stage 1, search for the saddle from configuration 0
+  ----------------------------------------------------------------------------------------------------
+    Steps  E-Eref m_perp trial nlanc ftot       fpar        fperp     eigen       delr   evalf
+  ----------------------------------------------------------------------------------------------------
+       0    0.01851   3   3     0    0.45037   -0.41762    0.16861    0.00000    0.10518 2175
+       5    0.99789   6   6    15    1.50865   -1.43278    0.47239   -0.84190    1.32132 2252
+       6    1.12466   6   6     5    1.41970   -1.24567    0.68108   -1.03964    1.60181 2265
+  ----------------------------------------------------------------------------------------------------
+  Stage 1 succeeded after 6 iterations, continue searching based on eigen-vector.
+  Stage 2, converge to the saddle by using Lanczos
+  ----------------------------------------------------------------------------------------------------
+    Iter   E-Eref m_perp trial nlanc ftot      fpar        fperp     eigen     delr    h.h' evalf
+  ----------------------------------------------------------------------------------------------------
+       0    0.60080  11  11     3    0.48652    0.06763    0.48180  -1.0413   1.4091 -0.508 2280
+       2    0.51139  13  13     3    0.08161   -0.00299    0.08155  -1.2732   1.3603  1.000 2323
+  ----------------------------------------------------------------------------------------------------
+  Stage 2 converged at a new saddle after 2 iterations, dE = 0.51139
+    The distance between new found saddle and min-0 is 1.35872, > -1, acceptable.
   Stage 3, push back the saddle to confirm if it is linked with min-0
-    - Current   energy (eV)     : -6212.089081
+    - Current   energy (eV)     : -6212.089082
     - Reference energy (eV)     : -6212.089082
     - Force two-norm final      : 0.000095
     - Minimizer stop condition  : force tolerance
-    - # of force evaluations    : 146
-  Stage 3 succeeded, dr = 0.000885241, drmax_atom = 8.33087e-05, tolerance = 0.5, accept the new saddle.
+    - # of force evaluations    : 144
+  Stage 3 succeeded, dr = 0.000193736, drmax_atom = 1.51917e-05, tolerance = 0.5, accept the new saddle.
   Stage 4, push over the new saddle, Enew: -6211.72; Eref= -6212.09. Relaxing...
-    Relaxed to a nearby minimum to sad-5
-    - Current  min  energy (eV) : -6212.089079
-    - Force two-norm final      : 0.000081
+    Relaxed to a nearby minimum to sad-3
+    - Current  min  energy (eV) : -6212.089081
+    - Force two-norm final      : 0.000095
       - Reference     energy (eV) : -6212.089082
       - Minimizer stop condition  : force tolerance
-      - Distance to min-00000000  : 2.56122
+      - Distance to min-00000000  : 2.56123
+  Stage 4 done, the new min (E= -6212.09) of ID 3 is rejected by Metropolis.
+
+Attempt 7, new activation centered on atom 1793 with total 5 atoms. 3 success till now.
+  Stage 1, search for the saddle from configuration 0
+  ----------------------------------------------------------------------------------------------------
+    Steps  E-Eref m_perp trial nlanc ftot       fpar        fperp     eigen       delr   evalf
+  ----------------------------------------------------------------------------------------------------
+       0    0.02176   3   3     0    0.52203   -0.49129    0.17650    0.00000    0.10559 2633
+       5    0.97998   6   6     9    1.63131   -1.54419    0.52596   -0.59672    1.46991 2704
+       6    1.11761   6   6     9    1.43722   -1.29909    0.61479   -6.30638    1.76061 2721
+  ----------------------------------------------------------------------------------------------------
+  Stage 1 succeeded after 6 iterations, continue searching based on eigen-vector.
+  Stage 2, converge to the saddle by using Lanczos
+  ----------------------------------------------------------------------------------------------------
+    Iter   E-Eref m_perp trial nlanc ftot      fpar        fperp     eigen     delr    h.h' evalf
+  ----------------------------------------------------------------------------------------------------
+       0    0.82292  11  11     5    0.65126   -0.56610    0.32197  -2.8926   1.6493  0.527 2738
+       5    0.82117  12  12    15    0.07459   -0.05603    0.04923  -0.1601   2.2975  0.924 2903
+  ----------------------------------------------------------------------------------------------------
+  Stage 2 converged at a new saddle after 5 iterations, dE = 0.821168
+    The distance between new found saddle and min-0 is 2.29699, > -1, acceptable.
+  Stage 3, push back the saddle to confirm if it is linked with min-0
+    - Current   energy (eV)     : -6212.089073
+    - Reference energy (eV)     : -6212.089082
+    - Force two-norm final      : 0.000089
+    - Minimizer stop condition  : force tolerance
+    - # of force evaluations    : 157
+  Stage 3 succeeded, dr = 0.00194767, drmax_atom = 0.00019997, tolerance = 0.5, accept the new saddle.
+  Stage 4, push over the new saddle, Enew: -6211.26; Eref= -6212.09. Relaxing...
+    Relaxed to a nearby minimum to sad-4
+    - Current  min  energy (eV) : -6211.282207
+    - Force two-norm final      : 0.000097
+      - Reference     energy (eV) : -6212.089082
+      - Minimizer stop condition  : force tolerance
+      - Distance to min-00000000  : 2.70811
+  Stage 4 done, the new min (E= -6211.28) of ID 4 is rejected by Metropolis.
+
+Attempt 8, new activation centered on atom 1793 with total 5 atoms. 4 success till now.
+  Stage 1, search for the saddle from configuration 0
+  ----------------------------------------------------------------------------------------------------
+    Steps  E-Eref m_perp trial nlanc ftot       fpar        fperp     eigen       delr   evalf
+  ----------------------------------------------------------------------------------------------------
+       0    0.01637   3   3     0    0.43267   -0.39385    0.17912    0.00000    0.10763 3258
+       5    1.03427   6   6    25    1.80268   -1.74951    0.43459   -0.44880    1.37390 3345
+       6    1.25969   6   6    16    1.74253   -1.64015    0.58851  -13.61128    1.65025 3369
+  ----------------------------------------------------------------------------------------------------
+  Stage 1 succeeded after 6 iterations, continue searching based on eigen-vector.
+  Stage 2, converge to the saddle by using Lanczos
+  ----------------------------------------------------------------------------------------------------
+    Iter   E-Eref m_perp trial nlanc ftot      fpar        fperp     eigen     delr    h.h' evalf
+  ----------------------------------------------------------------------------------------------------
+       0    0.74353  11  11     9    0.80489   -0.70126    0.39506  -3.2737   1.4376  0.449 3390
+       4    0.50996  15  15     3    0.06306   -0.00369    0.06296  -1.2991   1.3582  0.999 3507
+  ----------------------------------------------------------------------------------------------------
+  Stage 2 converged at a new saddle after 4 iterations, dE = 0.509957
+    The distance between new found saddle and min-0 is 1.35669, > -1, acceptable.
+  Stage 3, push back the saddle to confirm if it is linked with min-0
+    - Current   energy (eV)     : -6212.089081
+    - Reference energy (eV)     : -6212.089082
+    - Force two-norm final      : 0.000091
+    - Minimizer stop condition  : force tolerance
+    - # of force evaluations    : 144
+  Stage 3 succeeded, dr = 0.000677345, drmax_atom = 6.2432e-05, tolerance = 0.5, accept the new saddle.
+  Stage 4, push over the new saddle, Enew: -6211.72; Eref= -6212.09. Relaxing...
+    Relaxed to a nearby minimum to sad-5
+    - Current  min  energy (eV) : -6212.089080
+    - Force two-norm final      : 0.000086
+      - Reference     energy (eV) : -6212.089082
+      - Minimizer stop condition  : force tolerance
+      - Distance to min-00000000  : 2.56123
   Stage 4 done, the new min (E= -6212.09) of ID 5 is rejected by Metropolis.
 
 #=========================================================================================
-# Total number of ARTn attempts : 5
-# Number of new found saddle    : 5 (100.0% success)
-# Number of accepted new saddle : 5 (100.0% acceptance)
-# Overall mission success rate  : 100.0%
+# Total number of ARTn attempts : 8
+# Number of new found saddle    : 6 (75.0% success)
+# Number of accepted new saddle : 5 (83.3% acceptance)
+# Overall mission success rate  : 62.5%
 # Number of new minimumi found  : 5
 # Number of accepted minima     : 0 (0% acceptance)
-# Number of force evaluation    : 3019
+# Number of force evaluation    : 3815
 #=========================================================================================
