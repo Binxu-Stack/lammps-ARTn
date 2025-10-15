@@ -1,5 +1,5 @@
 # LAMMPS ARTn 
-The LAMMPS implication of Activation Relaxation Technique nouveau.
+The LAMMPS implementation of Activation Relaxation Technique nouveau.
 
 ## What it includes
 
@@ -58,9 +58,9 @@ These extensions make this implementation particularly suitable for studying com
 
 ## Installation
 
-### Prerequest
+### Prerequisites
 
-MKL package.
+Intel Math Kernel Library (MKL) package.
 
 ### Compile
 
@@ -74,7 +74,7 @@ make yes-USER-ARTn
 make machine
 ```
 
-command for cmake:
+Command for cmake:
 ```bash
 cd ${software}/ARTn
 cp -r src/USER-ARTn ${software}/lammps/src
@@ -91,26 +91,28 @@ make install
 ```
 
 
-## Benchmark 
+## Usage and Examples
 
-After Compiling, you can run  prepared tests on  *./example* directory. One is Cu(110) surface diffusion events
-searching,  and the second one is  thermally activated events searching  in Cu$_{64}$Zr$_{36}$ metallic glasses.
-Third one is for testing new feature. You don't need it.
+After compiling, you can run prepared tests in the *./example* directory. One is Cu(110) surface diffusion events
+searching, and the second one is thermally activated events searching in Cu$_{64}$Zr$_{36}$ metallic glasses.
+The third one is for testing new features. You don't need it.
 
-To launch a ARTn searching, two files are often needed.
+To launch an ARTn search, two files are often needed:
 
-  * in.lammps: use the following command to activate ARTn process.
+  * **in.artn** (or in.lammps): Use the following commands to activate the ARTn process.
     ```
     min_style artn
-    minimize etol fotl maxiter maxeval
+    minimize etol ftol maxiter maxeval
     ```
+    where `etol` is energy tolerance, `ftol` is force tolerance, `maxiter` is maximum iterations, and `maxeval` is maximum force evaluations.
 
-  * artn.control: Parameters that control ARTn simulation are defined in this file.
+  * **artn.control**: Parameters that control ARTn simulation are defined in this file.
 
-You can do the benchmark use the command that launch a LAMMPS simulation, like
+You can run the benchmark using the command that launches a LAMMPS simulation, like:
+```bash
+mpirun -np 4 lmp -in in.artn
 ```
- mpirun -np 4 lmp -in in.lammps 
-```
+(where `lmp` is your LAMMPS executable, which may be named `lmp_mpi`, `lmp_serial`, etc.)
 
 ## Output files
 1. **log.event**: is expected to record all the important thermo info of events.
@@ -126,7 +128,7 @@ You can do the benchmark use the command that launch a LAMMPS simulation, like
    * sad-dz: |z(sad) - z(minimum)|
    * sad-dr: |r(sad) - r(minimum)|
    * ref: id of reference configuration (initial minimum)
-   * sad: id of reference configuration 
+   * sad: id of saddle point configuration 
    * min: id of new minimum configuration (final minimum)
    * Center: id of center atom to do initial activation (perturbation)
    * Eref: energy of reference configuration (initial minimum)
@@ -135,14 +137,14 @@ You can do the benchmark use the command that launch a LAMMPS simulation, like
      configuration choose the initial configuration as the reference configuration.
    * pxx: xx component of pressure in final minimum configuration (set flag_press to 1 to show the pressure info) 
    * pyy: yy component of pressure in final minimum configuration 
-   * pxx: zz component of pressure in final minimum configuration 
+   * pzz: zz component of pressure in final minimum configuration 
    * pxy: xy component of pressure in final minimum configuration 
    * pxz: xz component of pressure in final minimum configuration 
    * pyz: yz component of pressure in final minimum configuration 
    * Efinal: Energy of final minimum configuration 
    * status: 1, accept the new minimum configuration as the initial minimum configuration to start new search. 0, reject.
-     Used in Metropolis condition. Set tempertature to a positive float number to activate this feature. Negative
-     temperature will alway reject the new minimum configuration and start new search from the same initial minimum
+     Used in Metropolis condition. Set temperature to a positive float number to activate this feature. Negative
+     temperature will always reject the new minimum configuration and start new search from the same initial minimum
      configuration.
    * dr: |r(final) - r(minimum)|
 
@@ -157,7 +159,7 @@ You can do the benchmark use the command that launch a LAMMPS simulation, like
    * evalf: number of force evaluation.
    * h.h': previous  eigenvector of lowest eigenvalue dot current eigenvector of lowest eigenvalue.
 
-3. **sadl\_press.dat**: Recording the pressure of all the saddle point in the order of xx, yy, zz, xy, xz, yz.
+3. **sadl_press.dat**: Recording the pressure of all the saddle points in the order of xx, yy, zz, xy, xz, yz.
 
 4. **min.lammpstrj**: configurations of all the minimums. Dump atom format. TIMESTEP: id of the configuration (also used
    in log.event).
@@ -171,8 +173,8 @@ All the parameters are defined in **artn.control**. Many parameters are self-exp
 Basic parameters (Standard ARTn process in the literature):
 
   * group_4_activat: The LAMMPS group ID of the atoms that will be activated.
-  * cluster_radius: < 0, all atoms in the *group_4_activat* will be kicked in the initial pertubation in each ARTn loop; > 0, a cluster
-    centers on a random atom  in *group_4_activat* with a radius of cluster_radius will be kicked in each ARTn loop. = 0, a random atom in *group_4_activat* will be kicked
+  * cluster_radius: < 0, all atoms in the *group_4_activat* will be kicked in the initial perturbation in each ARTn loop; > 0, a cluster
+    centered on a random atom in *group_4_activat* with a radius of cluster_radius will be kicked in each ARTn loop. = 0, a random atom in *group_4_activat* will be kicked
     in each ARTn loop.
   * max_num_events: max number of events to be found.
   * force_th_saddle: Force threshold for convergence at saddle point.
@@ -181,10 +183,10 @@ Basic parameters (Standard ARTn process in the literature):
 
 Extended parameters (Customized ARTn process):
 
-  * events_per_atom: number of events that will be found on each atom. > 0, the max number of events will be the result of atom number in group_4_activat  times
-    events_per_atom
+  * events_per_atom: Number of events that will be found on each atom. If > 0, the maximum number of events will be 
+    the number of atoms in group_4_activat multiplied by events_per_atom.
   
-  * flag_dump_direction: = 1, Define the initial kick direction from a dump file (name of this file is defined by
+  * flag_dump_direction: = 1, define the initial kick direction from a dump file (the name of this file is defined by
     fdump_direction).
 
 ## Contributors
@@ -199,13 +201,13 @@ If you find this package useful, please cite our paper and the original ARTn met
 
 **This Implementation:**
 
-1. B. Xu, et al., Phys., Rev. Lett., 120, 125503
+1. B. Xu, et al., Phys. Rev. Lett. 120, 125503 (2018).
 
 **ARTn Method Papers:**
 
 1. G. T. Barkema, et al., Phys. Rev. Lett. 77, 4358 (1996).
 2. R. Malek, et al., Phys. Rev. E 62, 7723-7728 (2000).
 3. E. Cances, et al., J. Chem. Phys. 130, 114711 (2009).
-4. N. Mousseau, el al., J. At., Mol., Opt. Phys. 2012, 1 (2012).
+4. N. Mousseau, et al., J. At., Mol., Opt. Phys. 2012, 1 (2012).
     
 
