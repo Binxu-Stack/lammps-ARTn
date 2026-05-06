@@ -221,7 +221,6 @@ int MinARTn::iterate(int maxevent)
             if (iatom >= ngroup)
             {
               break;
-              flag_find_saddle = 0;
             }
           }
         }
@@ -307,7 +306,10 @@ int MinARTn::iterate(int maxevent)
       ++evalf;
       artn_reset_vec();
     }
-    fflush(fp2);
+    if (me == 0 && fp2)
+    {
+      fflush(fp2);
+    }
     if (++events_iterator >= events_per_atom)
     {
       ++iatom;
@@ -549,8 +551,8 @@ void MinARTn::analysis_saddle()
       for (int i = 0; i < 6; ++i)
         fprintf(fp_sadlpress, " %10g", press[i]);
       fprintf(fp_sadlpress, "\n");
+      fflush(fp_sadlpress);
     }
-    fflush(fp_sadlpress);
   }
 }
 
@@ -655,8 +657,11 @@ void MinARTn::metropolis()
   disp_me[0] = dr;
   disp_me[1] = double(n_moved);
   MPI_Reduce(disp_me, disp_all, 2, MPI_DOUBLE, MPI_SUM, 0, world);
-  drall = sqrt(disp_all[0]);
-  n_movedall = int(disp_all[1]);
+  if (me == 0)
+  {
+    drall = sqrt(disp_all[0]);
+    n_movedall = int(disp_all[1]);
+  }
 
   if (me == 0 && fp2)
     fprintf(fp2, " %5d", n_movedall);
@@ -690,7 +695,7 @@ void MinARTn::metropolis()
     print_info(60);
 
     // temporary modification
-    if (temperature > 0. && (ecurrent < eref || random->uniform() < exp((eref - ecurrent) / temperature)) && ecurrent - eref > -5)
+    if (temperature > 0. && (ecurrent < eref || random->uniform() < exp((eref - ecurrent) / temperature)))
       acc = 1;
   }
   MPI_Bcast(&acc, 1, MPI_INT, 0, world);
@@ -863,7 +868,7 @@ void MinARTn::read_control()
       else if (strcmp(token1, "max_trials") == 0)
       {
         max_trials = utils::inumeric(FLERR, token2, false, lmp);
-        if (max_activat_iter < 1)
+        if (max_trials < 1)
           error->all(FLERR, "ARTn: max_trials must be greater than 0");
       }
       else if (strcmp(token1, "increment_size") == 0)
@@ -1304,7 +1309,7 @@ void MinARTn::read_control()
     fprintf(fp1, "max_num_events      %-18d  # %s\n", max_num_events, "Max number of events");
     fprintf(fp1, "min_fire            %-18d  # %s\n", min_fire, "use FIRE to do minimization both in push back & push forward");
     fprintf(fp1, "flag_press          %-18d  # %s\n", flag_press, "Flag whether the pressure info will be monitored");
-    fprintf(fp1, "flag_sadl_press     %-18d  # %s\n", flag_press, "Flag whether the sadlle point pressure info will be monitored");
+    fprintf(fp1, "flag_sadl_press     %-18d  # %s\n", flag_sadl_press, "Flag whether the sadlle point pressure info will be monitored");
     fprintf(fp1, "random_seed         %-18d  # %s\n", seed, "Seed for random generator");
     fprintf(fp1, "init_config_id      %-18d  # %s\n", min_id, "ID of the initial stable configuration");
     fprintf(fp1, "flag_push_over      %-18d  # %s\n", flag_push_over, "Flag whether to push over saddle to find another minimum");
@@ -1674,8 +1679,11 @@ int MinARTn::find_saddle()
     tmp_me[0] = ftot;
     tmp_me[1] = delr;
     MPI_Reduce(tmp_me, tmp_all, 2, MPI_DOUBLE, MPI_SUM, 0, world);
-    ftotall = tmp_all[0];
-    delr = tmp_all[1];
+    if (me == 0)
+    {
+      ftotall = tmp_all[0];
+      delr = tmp_all[1];
+    }
 
     if (it > min_num_ksteps)
       nlanc = lanczos(flag_egvec, 1, num_lancz_vec_h);
